@@ -7,7 +7,7 @@ export interface EnvData {
   APP_DEBUG: boolean;
 
   // database
-  DB_TYPE: 'postgres' | 'mariadb';
+  DB_TYPE: 'postgres';
   DB_HOST?: string;
   DB_NAME: string;
   DB_PORT?: number;
