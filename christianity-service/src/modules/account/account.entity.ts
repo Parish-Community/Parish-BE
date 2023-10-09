@@ -1,7 +1,7 @@
-import { ShareBaseEntity } from 'src/core/base.entity';
-import { GENDER } from 'src/core/constants';
+import { ShareBaseEntity } from '@/core/base.entity';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
-import { Profile } from '../profile/profile.entity';
+import { Profile } from '@/modules/profile/profile.entity';
+import { Role } from '@/modules/role/role.entity';
 
 @Entity({
   name: 'account',
@@ -61,4 +61,13 @@ export class Account extends ShareBaseEntity {
   })
   @JoinColumn({ name: 'profileId', referencedColumnName: 'id' })
   profile: Profile;
+
+  @Column({
+    type: 'int',
+    nullable: false,
+  })
+  roleId: number;
+  @ManyToOne(() => Role, (role) => role.accounts, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'roleId', referencedColumnName: 'roleId' })
+  role: Role;
 }

@@ -1,7 +1,7 @@
-import { ShareBaseEntity } from 'src/core/base.entity';
-import { GENDER } from 'src/core/constants';
+import { ShareBaseEntity } from '@/core/base.entity';
+import { GENDER } from '@/core/constants';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
-import { Account } from '../account/account.entity';
+import { Account } from '@/modules/account/account.entity';
 
 @Entity({
   name: 'profile',
