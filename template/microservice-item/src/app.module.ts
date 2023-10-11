@@ -3,16 +3,15 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { DatabaseOrmModule } from './database/database.module';
-import { ShareBaseEntity } from './entities/base.entity';
+import { DatabaseModule } from './database/database.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: '../../development.env',
+      isGlobal: true,
+      envFilePath: '.env',
     }),
-    DatabaseOrmModule(),
-    TypeOrmModule.forFeature([ShareBaseEntity]),
+    DatabaseModule,
   ],
   controllers: [AppController],
   providers: [AppService],
