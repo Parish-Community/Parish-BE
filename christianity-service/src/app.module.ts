@@ -16,7 +16,6 @@ import { ProfileModule } from './modules/profile/profile.module';
       envFilePath: '.env',
     }),
     DatabaseModule,
-    TypeOrmModule.forFeature([ShareBaseEntity]),
     ProfileModule,
   ],
   controllers: [AppController, ProfileController],

@@ -8,7 +8,7 @@ import {
 } from 'typeorm';
 
 @Entity()
-export class ShareBaseEntity extends BaseEntity {
+export abstract class ShareBaseEntity extends BaseEntity {
   @PrimaryGeneratedColumn({
     type: 'int',
   })
