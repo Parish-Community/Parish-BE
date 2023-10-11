@@ -12,7 +12,8 @@ import { ProfileModule } from './modules/profile/profile.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: '../../development.env',
+      isGlobal: true,
+      envFilePath: '.env',
     }),
     DatabaseModule,
     TypeOrmModule.forFeature([ShareBaseEntity]),

@@ -2,6 +2,7 @@ import { ShareBaseEntity } from '@/core/base.entity';
 import { GENDER } from '@/core/constants';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { Account } from '@/modules/account/account.entity';
+import { ParishCluster } from '../parish_cluster/parish_cluster.entity';
 
 @Entity({
   name: 'profile',
@@ -13,6 +14,13 @@ export class Profile extends ShareBaseEntity {
     nullable: false,
   })
   fullname: string;
+
+  @Column({
+    type: 'varchar',
+    length: 100,
+    nullable: false,
+  })
+  christianName: string;
 
   @Column({
     type: 'enum',
@@ -56,11 +64,25 @@ export class Profile extends ShareBaseEntity {
   parish: string;
 
   @Column({
-    type: 'varchar',
-    length: 500,
+    type: 'boolean',
+    nullable: false,
+    default: false,
+  })
+  isRequestAccount: boolean;
+
+  @Column({
+    type: 'int',
     nullable: false,
   })
-  parish_cluster: string;
+  parish_clusterId: number;
+  @ManyToOne(() => ParishCluster, (parish_cluster) => parish_cluster.profiles, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({
+    name: 'parish_clusterId',
+    referencedColumnName: 'parish_clusterId',
+  })
+  parish_cluster: ParishCluster;
 
   @OneToMany(() => Account, (account) => account.profile)
   accounts: Account[];
