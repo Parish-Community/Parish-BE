@@ -3,6 +3,10 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
 import { EnvService } from '../../common/env.service';
 import { RoleService } from './role/service';
 import { RoleController } from './role/controller';
+import { ProfileService } from './profile/service';
+import { ProfileController } from './profile/controller';
+import { ParisClusterController } from './parish_cluster/controller';
+import { ParisClusterService } from './parish_cluster/service';
 
 @Module({
   imports: [
@@ -19,8 +23,8 @@ import { RoleController } from './role/controller';
     // forwardRef(() => ProjectModule),
     // forwardRef(() => DayOffModule),
   ],
-  controllers: [RoleController],
-  providers: [RoleService],
-  exports: [RoleService],
+  controllers: [RoleController, ProfileController, ParisClusterController],
+  providers: [RoleService, ProfileService, ParisClusterService],
+  exports: [RoleService, ProfileService, ParisClusterService],
 })
 export class ChristianityModule {}

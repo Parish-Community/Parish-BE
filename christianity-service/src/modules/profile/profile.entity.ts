@@ -36,6 +36,27 @@ export class Profile extends ShareBaseEntity {
 
   @Column({
     type: 'varchar',
+    length: 500,
+    nullable: false,
+  })
+  name_father: string;
+
+  @Column({
+    type: 'varchar',
+    length: 500,
+    nullable: false,
+  })
+  name_mother: string;
+
+  @Column({
+    type: 'varchar',
+    length: 500,
+    nullable: false,
+  })
+  god_parent: string;
+
+  @Column({
+    type: 'varchar',
     length: 10,
     nullable: true,
     unique: true,
