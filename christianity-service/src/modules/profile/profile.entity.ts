@@ -44,6 +44,13 @@ export class Profile extends ShareBaseEntity {
 
   @Column({
     type: 'varchar',
+    nullable: true,
+    length: 500,
+  })
+  avatar: string;
+
+  @Column({
+    type: 'varchar',
     length: 500,
     nullable: false,
   })
