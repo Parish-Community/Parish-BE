@@ -10,10 +10,6 @@ import { GetProfileResDto, GetProfilesResDto } from './dto/res.dto';
 export class ProfileController {
   constructor(private readonly profileService: ProfileService) {}
 
-  //Get all profile
-  // @Get('list')
-  // @ApiOperation({ summary: 'Get all profile' })
-  // @ApiOkResponse({ description: 'The list profile were returned successfully' })
   @MessagePattern({ object: 'profile', cmd: 'get-list-profile' })
   async getProfiles(): Promise<GetProfilesResDto> {
     return await this.profileService.getProfiles();

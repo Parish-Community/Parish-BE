@@ -12,8 +12,9 @@ async function bootstrap() {
     origin: '*',
     methods: '*',
   });
+  app.setGlobalPrefix('api/v1');
   app.useGlobalPipes(new ValidationPipe(ValidationConfig));
   Swagger(app);
-  await app.listen(5000);
+  await app.listen(8888);
 }
 bootstrap();

@@ -3,15 +3,24 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from './database/database.module';
-import { ProfileController } from './modules/profile/profile.controller';
-import { ProfileService } from './modules/profile/profile.service';
-import { ProfileModule } from './modules/profile/profile.module';
-import { RoleModule } from './modules/role/role.module';
-import { RoleController } from './modules/role/role.controller';
-import { RoleService } from './modules/role/role.service';
-import { ParishClusterModule } from './modules/parish_cluster/parish_cluster.module';
-import { ParishClusterController } from './modules/parish_cluster/parish_cluster.controller';
-import { ParishClusterService } from './modules/parish_cluster/parish_cluster.service';
+import {
+  AccountController,
+  ParishClusterController,
+  ProfileController,
+  RoleController,
+} from './modules/controller';
+import {
+  AccountService,
+  ParishClusterService,
+  ProfileService,
+  RoleService,
+} from './modules/service';
+import {
+  AccountModule,
+  ParishClusterModule,
+  ProfileModule,
+  RoleModule,
+} from './modules';
 
 @Module({
   imports: [
@@ -23,13 +32,21 @@ import { ParishClusterService } from './modules/parish_cluster/parish_cluster.se
     ProfileModule,
     RoleModule,
     ParishClusterModule,
+    AccountModule,
   ],
   controllers: [
     AppController,
     ProfileController,
     RoleController,
     ParishClusterController,
+    AccountController,
   ],
-  providers: [AppService, ProfileService, RoleService, ParishClusterService],
+  providers: [
+    AppService,
+    ProfileService,
+    RoleService,
+    ParishClusterService,
+    AccountService,
+  ],
 })
 export class AppModule {}

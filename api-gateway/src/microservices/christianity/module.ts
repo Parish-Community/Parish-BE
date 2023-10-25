@@ -7,6 +7,8 @@ import { ProfileService } from './profile/service';
 import { ProfileController } from './profile/controller';
 import { ParisClusterController } from './parish_cluster/controller';
 import { ParisClusterService } from './parish_cluster/service';
+import { AccountController } from './account/controller';
+import { AccountService } from './account/service';
 
 @Module({
   imports: [
@@ -23,8 +25,13 @@ import { ParisClusterService } from './parish_cluster/service';
     // forwardRef(() => ProjectModule),
     // forwardRef(() => DayOffModule),
   ],
-  controllers: [RoleController, ProfileController, ParisClusterController],
-  providers: [RoleService, ProfileService, ParisClusterService],
-  exports: [RoleService, ProfileService, ParisClusterService],
+  controllers: [
+    RoleController,
+    ProfileController,
+    ParisClusterController,
+    AccountController,
+  ],
+  providers: [RoleService, ProfileService, ParisClusterService, AccountService],
+  exports: [RoleService, ProfileService, ParisClusterService, AccountService],
 })
 export class ChristianityModule {}

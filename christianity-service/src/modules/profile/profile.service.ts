@@ -28,7 +28,7 @@ export class ProfileService {
       return AppResponse.setSuccessResponse<GetProfileResDto>(
         {
           id: profile.identifiers[0].id,
-          fullNameDetail: `${christianName} ${fullname}`,
+          fullName: `${christianName} ${fullname}`,
         },
         {
           status: 201,
