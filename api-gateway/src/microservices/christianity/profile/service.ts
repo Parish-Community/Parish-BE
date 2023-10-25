@@ -38,4 +38,14 @@ export class ProfileService {
       data,
     );
   }
+
+  updateProfile(data: CreateProfileReqDto) {
+    return this.profileService.send(
+      {
+        object: 'profile',
+        cmd: 'update-profile',
+      },
+      data,
+    );
+  }
 }

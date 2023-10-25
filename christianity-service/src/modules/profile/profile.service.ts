@@ -2,8 +2,12 @@ import { Injectable, Inject } from '@nestjs/common';
 import { DataSource, Repository, SelectQueryBuilder } from 'typeorm';
 import { TYPEORM } from '../../core/constants';
 import { Profile } from './profile.entity';
-import { CreateProfileReqDto } from './dto/req.dto';
-import { GetProfileResDto, GetProfilesResDto } from './dto/res.dto';
+import { CreateProfileReqDto, UpdateProfileReqDto } from './dto/req.dto';
+import {
+  GetProfileResDto,
+  GetProfilesResDto,
+  UpdateProfileResDto,
+} from './dto/res.dto';
 import { AppResponse } from '@/core/app.response';
 
 @Injectable()
@@ -88,13 +92,51 @@ export class ProfileService {
         .where('profile.id = :profileId', { profileId: profileId })
         .getOne();
 
-      // const profile = await this._profileRepository.findOne({
-      //   where: { id: profileId },
-      // });
-
       return AppResponse.setSuccessResponse<GetProfileResDto>(profile);
     } catch (error) {
       return AppResponse.setAppErrorResponse<GetProfileResDto>(error.message);
+    }
+  }
+
+  async updateProfile(
+    profileId: number,
+    payload: UpdateProfileReqDto,
+  ): Promise<UpdateProfileResDto> {
+    try {
+      const profile = await this._profileRepository.findOne({
+        where: { id: profileId },
+      });
+      if (!profile) {
+        return AppResponse.setAppErrorResponse<UpdateProfileResDto>(
+          'Profile not found',
+        );
+      }
+
+      const isExist = await this._profileRepository.findOne({
+        where: { phonenumber: payload.phonenumber },
+      });
+      if (isExist) {
+        return AppResponse.setAppErrorResponse<UpdateProfileResDto>(
+          'Phonenumber is exist',
+        );
+      }
+
+      const updateProfile = await this._profileRepository.update(
+        { id: profileId },
+        payload,
+      );
+
+      return AppResponse.setSuccessResponse<UpdateProfileResDto>(
+        updateProfile,
+        {
+          status: 200,
+          message: `Updated profile`,
+        },
+      );
+    } catch (error) {
+      return AppResponse.setAppErrorResponse<UpdateProfileResDto>(
+        error.message,
+      );
     }
   }
 }
