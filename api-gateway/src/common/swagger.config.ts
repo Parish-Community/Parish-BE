@@ -17,7 +17,7 @@ export default function Swagger(app) {
     )
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document, {
+  SwaggerModule.setup('/docs/api', app, document, {
     swaggerOptions: {
       tagsSorter: 'alpha',
       operationsSorter: 'alpha',

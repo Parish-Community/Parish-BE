@@ -19,32 +19,32 @@ import { CreateProfileReqDto } from './dto/profile.dto';
 @ApiTags('Profiles')
 @Controller('profiles')
 export class ProfileController {
-  constructor(private readonly roleService: ProfileService) {}
+  constructor(private readonly profileService: ProfileService) {}
 
   @Get()
   @ApiOperation({ summary: 'Get all profile' })
   @ApiOkResponse({ description: 'The list profile were returned successfully' })
-  getRoles() {
-    return this.roleService.getProfiles();
+  getProfiles() {
+    return this.profileService.getProfiles();
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Get one profile' })
+  @ApiOperation({ summary: 'Get profile by id' })
   @ApiOkResponse({ description: 'The profile was returned successfully' })
   getProfile(@Param('id', ParseIntPipe) id: number) {
-    return this.roleService.getProfile(id);
+    return this.profileService.getProfile(id);
   }
 
-  @Post('create')
+  @Post('')
   @ApiOperation({ summary: 'Create new profile' })
   @ApiResponse({
-    status: 200,
+    status: 201,
     description: 'Created Profile',
   })
   @ApiBody({
     type: CreateProfileReqDto,
   })
   createRole(@Body() data: CreateProfileReqDto) {
-    return this.roleService.createProfile(data);
+    return this.profileService.createProfile(data);
   }
 }
