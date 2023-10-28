@@ -2,10 +2,10 @@ import { Injectable, Inject } from '@nestjs/common';
 import { DataSource, Repository, SelectQueryBuilder } from 'typeorm';
 import { TYPEORM } from '@/core/constants';
 import { AppResponse } from '@/core/app.response';
-import { Account } from './account.entity';
+import { Account } from '../account.entity';
 import { Profile } from '@/modules/profile/profile.entity';
-import { CreateAccountResDto, GetAccountResDto } from './dto/res.dto';
-import { CreateAccountReqDto } from './dto/req.dto';
+import { CreateAccountResDto, GetAccountResDto } from '../dto/res.dto';
+import { CreateAccountReqDto } from '../dto/req.dto';
 import { ErrorHandler } from '@/core/common/error';
 import { Bcrypt } from '@/core/utils/bcrypt';
 

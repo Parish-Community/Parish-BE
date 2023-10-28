@@ -1,7 +1,7 @@
 import { MessagePattern } from '@nestjs/microservices';
-import { CreateAccountResDto, GetAccountResDto } from './dto/res.dto';
-import { CreateAccountReqDto } from './dto/req.dto';
-import { AccountService } from './account.service';
+import { CreateAccountResDto, GetAccountResDto } from '../dto/res.dto';
+import { CreateAccountReqDto } from '../dto/req.dto';
+import { AccountService } from '../services/account.service';
 import { Body, Controller, Param, ParseIntPipe } from '@nestjs/common';
 
 @Controller('account')
