@@ -85,4 +85,17 @@ export class AccountService {
       return AppResponse.setAppErrorResponse<GetAccountResDto>(error.message);
     }
   }
+
+  // async updateRefreshToken(
+  //   id: number,
+  //   payload: UpdateAccountReqDto,
+  // ): Promise<Account> {
+  //   try {
+  //     const account = await this._accountRepository.findOneBy({ id });
+  //     account.refreshToken = payload.refreshToken;
+  //     return await this._accountRepository.save(account);
+  //   } catch (error) {
+  //     return error.message;
+  //   }
+  // }
 }

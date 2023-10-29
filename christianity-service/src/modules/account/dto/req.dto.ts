@@ -5,3 +5,15 @@ export class CreateAccountReqDto {
   profileId: number;
   roleId: number;
 }
+
+export class SigninReqDto {
+  email: string;
+  password: string;
+}
+
+export class RegisterReqDto {
+  email: string;
+  password: string;
+  phonenumber: string;
+  confirmPassword: string;
+}
