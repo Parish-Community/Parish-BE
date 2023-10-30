@@ -1,0 +1,15 @@
+import { ACCOUNT_ROLE } from '@/common/enums';
+import { JwtAuthGuard, RolesGuard } from '@/guards';
+import { applyDecorators, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth } from '@nestjs/swagger';
+import { HasRoles } from './role.decorator';
+
+export function Auth(...roles: ACCOUNT_ROLE[]) {
+  return roles.length === 0
+    ? applyDecorators(UseGuards(JwtAuthGuard), ApiBearerAuth('token'))
+    : applyDecorators(
+        UseGuards(JwtAuthGuard, RolesGuard),
+        HasRoles(...roles),
+        ApiBearerAuth('token'),
+      );
+}

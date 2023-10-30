@@ -19,6 +19,13 @@ export class Account extends ShareBaseEntity {
     type: 'varchar',
     length: 500,
     nullable: false,
+  })
+  fullname: string;
+
+  @Column({
+    type: 'varchar',
+    length: 500,
+    nullable: false,
     unique: true,
   })
   email: string;
@@ -70,4 +77,11 @@ export class Account extends ShareBaseEntity {
   @ManyToOne(() => Role, (role) => role.accounts, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'roleId', referencedColumnName: 'roleId' })
   role: Role;
+
+  @Column({
+    type: 'varchar',
+    length: 500,
+    nullable: true,
+  })
+  refresh_token: string;
 }
