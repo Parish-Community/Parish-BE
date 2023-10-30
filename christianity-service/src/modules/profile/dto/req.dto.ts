@@ -28,7 +28,9 @@ export class CreateProfileReqDto {
 }
 
 export class UpdateProfileReqDto {
+  id!: number;
   fullname!: string;
+  email!: string;
   christianName!: string;
   gender!: GENDER;
   dateOfBirth!: Date;

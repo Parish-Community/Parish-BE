@@ -28,10 +28,7 @@ export class ProfileController {
   }
 
   @MessagePattern({ object: 'profile', cmd: 'update-profile' })
-  async updateProfile(
-    param: { id: number },
-    @Body() data: UpdateProfileReqDto,
-  ): Promise<GetProfileResDto> {
-    return await this.profileService.updateProfile(param.id, data);
+  async updateProfile(data: UpdateProfileReqDto): Promise<GetProfileResDto> {
+    return await this.profileService.updateProfile(data.id, data);
   }
 }

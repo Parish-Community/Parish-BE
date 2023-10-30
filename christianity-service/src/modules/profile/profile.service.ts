@@ -103,6 +103,7 @@ export class ProfileService {
     payload: UpdateProfileReqDto,
   ): Promise<UpdateProfileResDto> {
     try {
+      const { phonenumber } = payload;
       const profile = await this._profileRepository.findOne({
         where: { id: profileId },
       });
@@ -112,13 +113,16 @@ export class ProfileService {
         );
       }
 
-      const isExist = await this._profileRepository.findOne({
-        where: { phonenumber: payload.phonenumber },
-      });
-      if (isExist) {
-        return AppResponse.setAppErrorResponse<UpdateProfileResDto>(
-          'Phonenumber is exist',
-        );
+      if (phonenumber) {
+        const existPhoneNumber = await this._profileRepository.findOne({
+          where: { phonenumber },
+        });
+
+        if (phonenumber === existPhoneNumber?.phonenumber) {
+          return AppResponse.setUserErrorResponse<UpdateProfileResDto>(
+            'The phone number already exists',
+          );
+        }
       }
 
       const updateProfile = await this._profileRepository.update(
@@ -127,10 +131,39 @@ export class ProfileService {
       );
 
       return AppResponse.setSuccessResponse<UpdateProfileResDto>(
-        updateProfile,
+        updateProfile.affected,
         {
           status: 200,
           message: `Updated profile`,
+        },
+      );
+    } catch (error) {
+      return AppResponse.setAppErrorResponse<UpdateProfileResDto>(
+        error.message,
+      );
+    }
+  }
+
+  async deleteProfile(profileId: number): Promise<UpdateProfileResDto> {
+    try {
+      const profile = await this._profileRepository.findOne({
+        where: { id: profileId },
+      });
+      if (!profile) {
+        return AppResponse.setAppErrorResponse<UpdateProfileResDto>(
+          'Profile not found',
+        );
+      }
+
+      const deleteProfile = await this._profileRepository.delete({
+        id: profileId,
+      });
+
+      return AppResponse.setSuccessResponse<UpdateProfileResDto>(
+        deleteProfile.affected,
+        {
+          status: 200,
+          message: `Deleted profile`,
         },
       );
     } catch (error) {

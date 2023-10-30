@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { CreateProfileReqDto } from './dto/profile.dto';
+import { CreateProfileReqDto, UpdateProfileReqDto } from './dto/profile.dto';
 
 @Injectable()
 export class ProfileService {
@@ -39,7 +39,7 @@ export class ProfileService {
     );
   }
 
-  updateProfile(data: CreateProfileReqDto) {
+  updateProfile(data: UpdateProfileReqDto) {
     return this.profileService.send(
       {
         object: 'profile',
