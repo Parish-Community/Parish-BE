@@ -2,7 +2,7 @@ import { Body, Controller, Param, ParseIntPipe } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { MessagePattern } from '@nestjs/microservices';
 import { ProfileService } from './profile.service';
-import { CreateProfileReqDto } from './dto/req.dto';
+import { CreateProfileReqDto, UpdateProfileReqDto } from './dto/req.dto';
 import { GetProfileResDto, GetProfilesResDto } from './dto/res.dto';
 
 @ApiTags('Profile')
@@ -25,5 +25,10 @@ export class ProfileController {
     @Body() data: CreateProfileReqDto,
   ): Promise<GetProfileResDto> {
     return await this.profileService.createProfile(data);
+  }
+
+  @MessagePattern({ object: 'profile', cmd: 'update-profile' })
+  async updateProfile(data: UpdateProfileReqDto): Promise<GetProfileResDto> {
+    return await this.profileService.updateProfile(data.id, data);
   }
 }

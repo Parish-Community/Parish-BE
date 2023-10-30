@@ -2,8 +2,12 @@ import { Injectable, Inject } from '@nestjs/common';
 import { DataSource, Repository, SelectQueryBuilder } from 'typeorm';
 import { TYPEORM } from '../../core/constants';
 import { Profile } from './profile.entity';
-import { CreateProfileReqDto } from './dto/req.dto';
-import { GetProfileResDto, GetProfilesResDto } from './dto/res.dto';
+import { CreateProfileReqDto, UpdateProfileReqDto } from './dto/req.dto';
+import {
+  GetProfileResDto,
+  GetProfilesResDto,
+  UpdateProfileResDto,
+} from './dto/res.dto';
 import { AppResponse } from '@/core/app.response';
 
 @Injectable()
@@ -88,13 +92,84 @@ export class ProfileService {
         .where('profile.id = :profileId', { profileId: profileId })
         .getOne();
 
-      // const profile = await this._profileRepository.findOne({
-      //   where: { id: profileId },
-      // });
-
       return AppResponse.setSuccessResponse<GetProfileResDto>(profile);
     } catch (error) {
       return AppResponse.setAppErrorResponse<GetProfileResDto>(error.message);
+    }
+  }
+
+  async updateProfile(
+    profileId: number,
+    payload: UpdateProfileReqDto,
+  ): Promise<UpdateProfileResDto> {
+    try {
+      const { phonenumber } = payload;
+      const profile = await this._profileRepository.findOne({
+        where: { id: profileId },
+      });
+      if (!profile) {
+        return AppResponse.setAppErrorResponse<UpdateProfileResDto>(
+          'Profile not found',
+        );
+      }
+
+      if (phonenumber) {
+        const existPhoneNumber = await this._profileRepository.findOne({
+          where: { phonenumber },
+        });
+
+        if (phonenumber === existPhoneNumber?.phonenumber) {
+          return AppResponse.setUserErrorResponse<UpdateProfileResDto>(
+            'The phone number already exists',
+          );
+        }
+      }
+
+      const updateProfile = await this._profileRepository.update(
+        { id: profileId },
+        payload,
+      );
+
+      return AppResponse.setSuccessResponse<UpdateProfileResDto>(
+        updateProfile.affected,
+        {
+          status: 200,
+          message: `Updated profile`,
+        },
+      );
+    } catch (error) {
+      return AppResponse.setAppErrorResponse<UpdateProfileResDto>(
+        error.message,
+      );
+    }
+  }
+
+  async deleteProfile(profileId: number): Promise<UpdateProfileResDto> {
+    try {
+      const profile = await this._profileRepository.findOne({
+        where: { id: profileId },
+      });
+      if (!profile) {
+        return AppResponse.setAppErrorResponse<UpdateProfileResDto>(
+          'Profile not found',
+        );
+      }
+
+      const deleteProfile = await this._profileRepository.delete({
+        id: profileId,
+      });
+
+      return AppResponse.setSuccessResponse<UpdateProfileResDto>(
+        deleteProfile.affected,
+        {
+          status: 200,
+          message: `Deleted profile`,
+        },
+      );
+    } catch (error) {
+      return AppResponse.setAppErrorResponse<UpdateProfileResDto>(
+        error.message,
+      );
     }
   }
 }

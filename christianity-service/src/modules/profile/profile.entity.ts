@@ -1,7 +1,7 @@
-import { ShareBaseEntity } from '@/core/base.entity';
-import { GENDER } from '@/core/constants';
+import { ShareBaseEntity } from '../../core/base.entity';
+import { GENDER } from '../../core/constants';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
-import { Account } from '@/modules/account/account.entity';
+import { Account } from '../../modules/account/account.entity';
 import { ParishCluster } from '../parish_cluster/parish_cluster.entity';
 
 @Entity({

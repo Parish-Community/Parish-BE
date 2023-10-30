@@ -1,4 +1,4 @@
-import { ShareBaseEntity } from 'src/core/base.entity';
+import { ShareBaseEntity } from '@/core/base.entity';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { Account } from '@/modules/account/account.entity';
 import { ACCOUNT_ROLE } from '@/core/constants';

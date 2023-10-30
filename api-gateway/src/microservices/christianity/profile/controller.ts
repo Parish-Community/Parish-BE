@@ -4,6 +4,7 @@ import {
   Get,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
 } from '@nestjs/common';
 import {
@@ -14,7 +15,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { ProfileService } from './service';
-import { CreateProfileReqDto } from './dto/profile.dto';
+import { CreateProfileReqDto, UpdateProfileReqDto } from './dto/profile.dto';
 
 @ApiTags('Profiles')
 @Controller('profiles')
@@ -46,5 +47,21 @@ export class ProfileController {
   })
   createRole(@Body() data: CreateProfileReqDto) {
     return this.profileService.createProfile(data);
+  }
+
+  @Patch(':id')
+  @ApiOperation({ summary: 'Update profile' })
+  @ApiResponse({
+    status: 200,
+    description: 'Updated profile',
+  })
+  @ApiBody({
+    type: UpdateProfileReqDto,
+  })
+  updateProfile(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: UpdateProfileReqDto,
+  ) {
+    return this.profileService.updateProfile({ id, ...body });
   }
 }
