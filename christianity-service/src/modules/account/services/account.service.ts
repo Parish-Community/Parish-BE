@@ -42,17 +42,7 @@ export class AccountService {
     payload: CreateAccountReqDto,
   ): Promise<CreateAccountResDto> {
     try {
-      const { phonenumber, password, profileId } = payload;
-
-      const profileData = await this._profileRepository.findOne({
-        where: { id: profileId },
-      });
-
-      if (!profileData) {
-        return AppResponse.setUserErrorResponse<CreateAccountResDto>(
-          ErrorHandler.notFound(`The profile ${profileId}`),
-        );
-      }
+      const { phonenumber, password } = payload;
 
       const existPhoneNumber = await this._accountRepository.findOne({
         where: { phonenumber },
@@ -86,16 +76,14 @@ export class AccountService {
     }
   }
 
-  // async updateRefreshToken(
-  //   id: number,
-  //   payload: UpdateAccountReqDto,
-  // ): Promise<Account> {
-  //   try {
-  //     const account = await this._accountRepository.findOneBy({ id });
-  //     account.refreshToken = payload.refreshToken;
-  //     return await this._accountRepository.save(account);
-  //   } catch (error) {
-  //     return error.message;
-  //   }
-  // }
+  async updateRefreshToken(id: number, refreshToken: string): Promise<Account> {
+    try {
+      const account = await this._accountRepository.findOneBy({ id });
+      const hashedRefreshToken = await Bcrypt.handleHashPassword(refreshToken);
+      account.refresh_token = hashedRefreshToken;
+      return await this._accountRepository.save(account);
+    } catch (error) {
+      return error.message;
+    }
+  }
 }

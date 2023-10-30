@@ -18,6 +18,11 @@ export class CreateAccountReqDto {
   @ApiProperty()
   readonly phonenumber: string;
 
+  @IsNotEmpty({ message: 'The fullname is required' })
+  @IsString()
+  @ApiProperty()
+  readonly fullname: string;
+
   @IsNotEmpty({ message: 'The email is required' })
   @IsString()
   @ApiProperty()
@@ -32,11 +37,6 @@ export class CreateAccountReqDto {
 
   @IsNotEmpty({ message: 'The roleId is required' })
   @IsInt()
-  @ApiProperty()
+  @ApiProperty({ example: 2 })
   readonly roleId: number;
-
-  @IsNotEmpty({ message: 'The userId is required' })
-  @IsInt()
-  @ApiProperty()
-  readonly profileId: number;
 }

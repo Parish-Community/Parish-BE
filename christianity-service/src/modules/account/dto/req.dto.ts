@@ -2,8 +2,8 @@ export class CreateAccountReqDto {
   phonenumber: string;
   email: string;
   password: string;
-  profileId: number;
-  roleId: number;
+  fullname: string;
+  roleId?: number;
 }
 
 export class SigninReqDto {
@@ -16,4 +16,5 @@ export class RegisterReqDto {
   password: string;
   phonenumber: string;
   confirmPassword: string;
+  fullname: string;
 }
