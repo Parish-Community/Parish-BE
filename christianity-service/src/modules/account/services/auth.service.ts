@@ -153,13 +153,13 @@ export class AuthService {
 
   async validateAccount(payload: SigninReqDto): Promise<Account | string> {
     try {
-      const { email, password } = payload;
+      const { phonenumber, password } = payload;
       const account = await this._accountRepository.findOne({
-        where: { email },
+        where: { phonenumber },
         relations: ['profile', 'role'],
       });
       if (!account) {
-        return ErrorHandler.notFound(`The account with ${email}`);
+        return ErrorHandler.notFound(`The account with ${phonenumber}`);
       }
 
       const passwordIsValid = await bcrypt.compare(

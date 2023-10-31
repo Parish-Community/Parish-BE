@@ -1,19 +1,45 @@
-import { MessagePattern } from '@nestjs/microservices';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+} from '@nestjs/common';
+import {
+  ApiBody,
+  ApiOkResponse,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { CreateAccountResDto, GetAccountResDto } from '../dto/res.dto';
 import { CreateAccountReqDto } from '../dto/req.dto';
 import { AccountService } from '../services/account.service';
-import { Body, Controller, Param, ParseIntPipe } from '@nestjs/common';
 
+@ApiTags('Account')
 @Controller('account')
 export class AccountController {
   constructor(private readonly accountService: AccountService) {}
 
-  @MessagePattern({ object: 'account', cmd: 'get-account-by-id' })
-  async getAccount(param: { id: number }): Promise<GetAccountResDto> {
-    return await this.accountService.getAccount(param.id);
+  @Get(':id')
+  @ApiOperation({ summary: 'Get account by id' })
+  @ApiOkResponse({ description: 'The account was returned successfully' })
+  async getAccount(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<GetAccountResDto> {
+    return await this.accountService.getAccount(id);
   }
 
-  @MessagePattern({ object: 'account', cmd: 'create-account' })
+  @Post('')
+  @ApiOperation({ summary: 'Create new account' })
+  @ApiResponse({
+    status: 201,
+    description: 'Created account',
+  })
+  @ApiBody({
+    type: CreateAccountReqDto,
+  })
   async createAccount(
     @Body() data: CreateAccountReqDto,
   ): Promise<CreateAccountResDto> {
