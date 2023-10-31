@@ -1,7 +1,15 @@
 import { ShareBaseEntity } from '@/core/base.entity';
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
+} from 'typeorm';
 import { Profile } from '@/modules/profile/profile.entity';
 import { Role } from '@/modules/role/role.entity';
+import { Marriage } from '../marriage/marriage.entity';
 
 @Entity({
   name: 'account',

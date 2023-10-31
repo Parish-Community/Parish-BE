@@ -1,5 +1,14 @@
 import { ShareBaseEntity } from '../../core/base.entity';
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
+} from 'typeorm';
+import { Account } from '../account/account.entity';
+import { GENDER, PARISH_CLUSTER } from '@/core/constants';
 
 @Entity({
   name: 'marriage',
@@ -34,18 +43,16 @@ export class Marriage extends ShareBaseEntity {
   first_student_mother: string;
 
   @Column({
-    type: 'varchar',
-    length: 500,
-    nullable: false,
+    type: 'enum',
+    enum: GENDER,
   })
-  first_student_gender: string;
+  first_student_gender: GENDER;
 
   @Column({
-    type: 'varchar',
-    length: 500,
-    nullable: false,
+    type: 'date',
+    nullable: true,
   })
-  first_student_DOB: string;
+  first_student_DOB: Date;
 
   @Column({
     type: 'varchar',
@@ -55,8 +62,11 @@ export class Marriage extends ShareBaseEntity {
   })
   first_student_parish: string;
 
-  @Column()
-  first_parish_clusterId: number;
+  @Column({
+    type: 'enum',
+    enum: PARISH_CLUSTER,
+  })
+  first_parish_cluster: PARISH_CLUSTER;
 
   @Column({
     type: 'varchar',
@@ -94,18 +104,16 @@ export class Marriage extends ShareBaseEntity {
   second_student_mother: string;
 
   @Column({
-    type: 'varchar',
-    length: 500,
-    nullable: false,
+    type: 'enum',
+    enum: GENDER,
   })
-  second_student_gender: string;
+  second_student_gender: GENDER;
 
   @Column({
-    type: 'varchar',
-    length: 500,
-    nullable: false,
+    type: 'date',
+    nullable: true,
   })
-  second_student_DOB: string;
+  second_student_DOB: Date;
 
   @Column({
     type: 'varchar',
@@ -115,8 +123,11 @@ export class Marriage extends ShareBaseEntity {
   })
   second_student_parish: string;
 
-  @Column()
-  second_parish_clusterId: number;
+  @Column({
+    type: 'enum',
+    enum: PARISH_CLUSTER,
+  })
+  second_parish_cluster: PARISH_CLUSTER;
 
   @Column({
     type: 'varchar',
@@ -124,4 +135,20 @@ export class Marriage extends ShareBaseEntity {
     nullable: false,
   })
   second_student_address: string;
+
+  @Column({
+    type: 'boolean',
+    nullable: false,
+    default: false,
+  })
+  isAccept: boolean;
+
+  @Column({
+    type: 'int',
+    nullable: false,
+  })
+  accountId: number;
+  @OneToOne(() => Account)
+  @JoinColumn()
+  account: Account;
 }

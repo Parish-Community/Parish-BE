@@ -1,6 +1,7 @@
 import { ShareBaseEntity } from '@/core/base.entity';
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { Profile } from '../profile/profile.entity';
+import { Marriage } from '../marriage/marriage.entity';
 
 @Entity({
   name: 'parish_cluster',
