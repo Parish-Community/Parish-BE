@@ -1,20 +1,21 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { DatabaseOrmModule } from './database/database.module';
-import { ShareBaseEntity } from './entities/base.entity';
+import { DatabaseModule } from './database/database.module';
+import { CourseModule, MarriageModule } from './modules';
+import { CourseService, MarriageService } from './modules/service';
+import { CourseController, MarriageController } from './modules/controller';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: '../../development.env',
+      isGlobal: true,
+      envFilePath: '.env',
     }),
-    DatabaseOrmModule(),
-    TypeOrmModule.forFeature([ShareBaseEntity]),
+    DatabaseModule,
+    MarriageModule,
+    CourseModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [MarriageController, CourseController],
+  providers: [MarriageService, CourseService],
 })
 export class AppModule {}
