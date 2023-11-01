@@ -3,12 +3,14 @@ import {
   Column,
   Entity,
   JoinColumn,
+  ManyToMany,
   ManyToOne,
   OneToMany,
   OneToOne,
 } from 'typeorm';
 import { Account } from '../account/account.entity';
 import { GENDER, PARISH_CLUSTER } from '@/core/constants';
+import { Course } from '../course/entities/course.entity';
 
 @Entity({
   name: 'marriage',
@@ -151,4 +153,25 @@ export class Marriage extends ShareBaseEntity {
   @OneToOne(() => Account)
   @JoinColumn()
   account: Account;
+
+  @Column({
+    type: 'int',
+    nullable: true,
+  })
+  courseId: number;
+  @ManyToOne(() => Course, (c) => c.marriages, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'courseId', referencedColumnName: 'id' })
+  course: Course;
+
+  @Column({ type: 'float', nullable: true })
+  first_score: number | null;
+
+  @Column({ type: 'float', nullable: true })
+  second_score: number | null;
+
+  @Column({ type: 'boolean', nullable: false, default: false })
+  second_isCompleteCourse: boolean;
+
+  @Column({ type: 'boolean', nullable: false, default: false })
+  first_isCompleteCourse: boolean;
 }

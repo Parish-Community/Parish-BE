@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from './database/database.module';
 import {
   AccountController,
+  CourseController,
   MarriageController,
   ParishClusterController,
   ProfileController,
@@ -10,6 +11,7 @@ import {
 } from './modules/controller';
 import {
   AccountService,
+  CourseService,
   MarriageService,
   ParishClusterService,
   ProfileService,
@@ -17,6 +19,7 @@ import {
 } from './modules/service';
 import {
   AccountModule,
+  CourseModule,
   MarriageModule,
   ParishClusterModule,
   ProfileModule,
@@ -35,6 +38,7 @@ import {
     ParishClusterModule,
     AccountModule,
     MarriageModule,
+    CourseModule,
   ],
   controllers: [
     ProfileController,
@@ -42,6 +46,7 @@ import {
     ParishClusterController,
     AccountController,
     MarriageController,
+    CourseController,
   ],
   providers: [
     ProfileService,
@@ -49,6 +54,7 @@ import {
     ParishClusterService,
     AccountService,
     MarriageService,
+    CourseService,
   ],
 })
 export class AppModule {}

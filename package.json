@@ -4,7 +4,7 @@
     "start:full": "run-p --print-label run-gateway run-christianity",
     "run-gateway": "cd api-gateway && yarn start:dev",
     "run-project": "cd project-service && yarn start:dev",
-    "run-christianity": "cd christianity-service && yarn start:dev"
+    "run-final": "cd christianity-service && yarn start:dev"
   },
   "devDependencies": {
     "npm-run-all": "^4.1.5"

@@ -8,7 +8,6 @@ export enum GENDER {
   FEMALE = 'female',
 }
 
-// enum parish cluster
 export enum PARISH_CLUSTER {
   CLUSTER1 = 'Tân Lộc',
   CLUSTER2 = 'Tràng Thị',
@@ -16,4 +15,22 @@ export enum PARISH_CLUSTER {
   CLUSTER4 = 'Giang Lĩnh',
   CLUSTER5 = 'Đồng Lưu',
   CLUSTER6 = 'Đô Khê',
+}
+
+export enum ATTENDANCE_STATUS {
+  ABSENT = 'absent',
+  PRESENT = 'present',
+  LEAVE = 'leave',
+}
+
+export enum COURSE_STATUS {
+  OPEN = 'open',
+  CLOSE = 'close',
+}
+
+export enum POSITION_PARISH {
+  PRIEST = 'priest',
+  MONK = 'monk',
+  NUN = 'nun',
+  CHRISTIANITY = 'christianity',
 }

@@ -1,8 +1,9 @@
 import { ShareBaseEntity } from '../../core/base.entity';
-import { GENDER } from '../../core/constants';
+import { GENDER, POSITION_PARISH } from '../../core/constants';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { Account } from '../../modules/account/account.entity';
 import { ParishCluster } from '../parish_cluster/parish_cluster.entity';
+import { Course } from '../course/entities/course.entity';
 
 @Entity({
   name: 'profile',
@@ -114,4 +115,14 @@ export class Profile extends ShareBaseEntity {
 
   @OneToMany(() => Account, (account) => account.profile)
   accounts: Account[];
+
+  @Column({
+    type: 'enum',
+    nullable: true,
+    enum: POSITION_PARISH,
+  })
+  position: POSITION_PARISH;
+
+  @OneToMany(() => Course, (course) => course.profile)
+  course: Course[];
 }

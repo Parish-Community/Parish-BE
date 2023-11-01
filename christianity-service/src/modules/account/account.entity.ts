@@ -10,6 +10,7 @@ import {
 import { Profile } from '@/modules/profile/profile.entity';
 import { Role } from '@/modules/role/role.entity';
 import { Marriage } from '../marriage/marriage.entity';
+import { Attendance } from '../course/entities/attendance.entity';
 
 @Entity({
   name: 'account',
@@ -92,4 +93,7 @@ export class Account extends ShareBaseEntity {
     nullable: true,
   })
   refresh_token: string;
+
+  @OneToMany(() => Attendance, (attendance) => attendance.account)
+  attendances: Attendance[];
 }

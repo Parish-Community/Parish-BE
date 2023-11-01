@@ -149,6 +149,11 @@ export class CreateReqMarriageDto {
   })
   @IsBoolean({ message: 'The isAccept status must be in boolean type' })
   isAccept?: boolean = false;
+
+  @IsNumber()
+  @IsOptional()
+  @ApiProperty()
+  courseId?: number;
 }
 
 // export dto req for create marriages

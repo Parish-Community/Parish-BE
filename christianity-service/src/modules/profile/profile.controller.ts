@@ -18,6 +18,8 @@ import { MessagePattern } from '@nestjs/microservices';
 import { ProfileService } from './profile.service';
 import { CreateProfileReqDto, UpdateProfileReqDto } from './dto/req.dto';
 import { GetProfileResDto, GetProfilesResDto } from './dto/res.dto';
+import { Auth } from '@/core/utils/decorator/auth.decorator';
+import { ACCOUNT_ROLE } from '@/core/constants';
 
 @ApiTags('Profile')
 @Controller('profile')
@@ -25,12 +27,15 @@ export class ProfileController {
   constructor(private readonly profileService: ProfileService) {}
 
   @Get()
+  @Auth(ACCOUNT_ROLE.ADM)
   @ApiOperation({ summary: 'Get all profile' })
   @ApiOkResponse({ description: 'The list profile were returned successfully' })
   async getProfiles(): Promise<GetProfilesResDto> {
     return await this.profileService.getProfiles();
   }
+
   @Get(':id')
+  @Auth(ACCOUNT_ROLE.ADM)
   @ApiOperation({ summary: 'Get profile by id' })
   @ApiOkResponse({ description: 'The profile was returned successfully' })
   async getProfile(
@@ -40,6 +45,7 @@ export class ProfileController {
   }
 
   @Post('')
+  @Auth(ACCOUNT_ROLE.ADM)
   @ApiOperation({ summary: 'Create new profile' })
   @ApiResponse({
     status: 201,
@@ -52,6 +58,7 @@ export class ProfileController {
   }
 
   @Patch(':id')
+  @Auth(ACCOUNT_ROLE.ADM)
   @ApiOperation({ summary: 'Update profile' })
   @ApiResponse({
     status: 200,

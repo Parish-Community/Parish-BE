@@ -14,6 +14,8 @@ import { GetMarriageResDto } from './dto/res';
 import { CreateReqMarriageDto } from './dto/req';
 import { JwtAuthGuard } from '@/core/utils/guards';
 import { GetAccount } from '@/core/utils/decorator/account.decorator';
+import { Auth } from '@/core/utils/decorator/auth.decorator';
+import { ACCOUNT_ROLE } from '@/core/constants';
 
 @ApiTags('Marriage')
 @Controller('marriages')
@@ -31,10 +33,20 @@ export class MarriageController {
   async createMarriage(
     @GetAccount() account,
     @Body() data: CreateReqMarriageDto,
-  ): Promise<any> {
+  ): Promise<GetMarriageResDto> {
     return await this.marriageService.createMarriage(
       account.payload.accountId,
       data,
     );
+  }
+
+  @Patch(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access_token')
+  @Auth(ACCOUNT_ROLE.ADM)
+  async updateMarriage(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<GetMarriageResDto> {
+    return await this.marriageService.updateMarriageAcceptStatus(id);
   }
 }

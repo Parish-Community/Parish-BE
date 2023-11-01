@@ -6,10 +6,10 @@ import { JwtAuthGuard, RolesGuard } from '../guards';
 
 export function Auth(...roles: ACCOUNT_ROLE[]) {
   return roles.length === 0
-    ? applyDecorators(UseGuards(JwtAuthGuard), ApiBearerAuth('token'))
+    ? applyDecorators(UseGuards(JwtAuthGuard), ApiBearerAuth('access_token'))
     : applyDecorators(
         UseGuards(JwtAuthGuard, RolesGuard),
         HasRoles(...roles),
-        ApiBearerAuth('token'),
+        ApiBearerAuth('access_token'),
       );
 }

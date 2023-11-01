@@ -1,4 +1,4 @@
-import { GENDER } from '@/core/constants';
+import { GENDER, POSITION_PARISH } from '@/core/constants';
 import {
   IsString,
   IsOptional,
@@ -82,6 +82,17 @@ export class CreateProfileReqDto {
   @IsInt()
   @ApiProperty()
   parish_clusterId: number;
+
+  @IsNotEmpty({ message: 'The position is required' })
+  @IsEnum(POSITION_PARISH, {
+    message: `The type of course status must be belonged to the enum ${Object.values(
+      POSITION_PARISH,
+    )}`,
+  })
+  @ApiProperty({
+    example: POSITION_PARISH.CHRISTIANITY,
+  })
+  position: POSITION_PARISH;
 }
 
 export class UpdateProfileReqDto {
@@ -161,4 +172,15 @@ export class UpdateProfileReqDto {
   @IsInt()
   @ApiProperty()
   parish_clusterId: number;
+
+  @IsOptional()
+  @IsEnum(POSITION_PARISH, {
+    message: `The type of course status must be belonged to the enum ${Object.values(
+      POSITION_PARISH,
+    )}`,
+  })
+  @ApiProperty({
+    example: POSITION_PARISH.CHRISTIANITY,
+  })
+  position: POSITION_PARISH;
 }

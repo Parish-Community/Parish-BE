@@ -5,14 +5,17 @@ import { Marriage } from './marriage.entity';
 import { Account } from '../account/account.entity';
 import { GetMarriageResDto } from './dto/res';
 import { AppResponse } from '@/core/app.response';
+import { ErrorHandler } from '@/core/common/error';
 
 @Injectable()
 export class MarriageService {
   private _dataSource: DataSource;
+  private _accountRepository: Repository<Account>;
   private _marriageRepository: Repository<Marriage>;
   constructor(@Inject(TYPEORM) dataSource: DataSource) {
     this._dataSource = dataSource;
     this._marriageRepository = dataSource.getRepository(Marriage);
+    this._accountRepository = dataSource.getRepository(Account);
   }
 
   async getMarriages(): Promise<GetMarriageResDto> {
@@ -28,19 +31,19 @@ export class MarriageService {
     }
   }
 
-  async createMarriage(accountId: number, data: any): Promise<any> {
+  async createMarriage(
+    accountId: number,
+    data: any,
+  ): Promise<GetMarriageResDto> {
     try {
-      const account = await this._dataSource
-        .createQueryBuilder()
-        .from(Account, 'account')
-        .where('account.id = :accountId', { accountId })
-        .getOne();
+      const account = await this._accountRepository.findOne({
+        where: { id: accountId },
+      });
 
       if (!account) {
-        return {
-          status: 404,
-          message: 'Account not found',
-        };
+        return AppResponse.setUserErrorResponse<GetMarriageResDto>(
+          ErrorHandler.notFound(`Account ${accountId}`),
+        );
       }
 
       data.accountId = accountId;
@@ -51,17 +54,20 @@ export class MarriageService {
         .values(data)
         .execute();
 
-      return {
-        status: 201,
-        message: 'Created marriage',
-        data: marriage.identifiers[0],
-      };
+      return AppResponse.setSuccessResponse<GetMarriageResDto>(
+        marriage.identifiers[0],
+        {
+          message: 'Created marriage',
+        },
+      );
     } catch (error) {
-      return error;
+      return AppResponse.setAppErrorResponse<GetMarriageResDto>(error.message);
     }
   }
 
-  async updateMarriageAcceptStatus(marriageId: number): Promise<any> {
+  async updateMarriageAcceptStatus(
+    marriageId: number,
+  ): Promise<GetMarriageResDto> {
     try {
       const marriage = await this._dataSource
         .createQueryBuilder()
@@ -70,10 +76,9 @@ export class MarriageService {
         .getOne();
 
       if (!marriage) {
-        return {
-          status: 404,
-          message: 'Marriage not found',
-        };
+        return AppResponse.setUserErrorResponse<GetMarriageResDto>(
+          ErrorHandler.notFound(`Marriage ${marriageId}`),
+        );
       }
 
       await this._dataSource
@@ -88,7 +93,7 @@ export class MarriageService {
         message: 'Updated marriage accept status',
       };
     } catch (error) {
-      return error;
+      return AppResponse.setAppErrorResponse<GetMarriageResDto>(error.message);
     }
   }
 }
