@@ -34,3 +34,13 @@ export enum POSITION_PARISH {
   NUN = 'nun',
   CHRISTIANITY = 'christianity',
 }
+
+export enum PaymentStatus {
+  Pending = 'pending',
+  Cancelled = 'cancelled',
+  Paid = 'paid',
+}
+
+export enum Currency {
+  Usd = 'usd',
+}

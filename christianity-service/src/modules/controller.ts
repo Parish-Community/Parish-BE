@@ -4,3 +4,4 @@ export * from './profile/profile.controller';
 export * from './parish_cluster/parish_cluster.controller';
 export * from './marriage/marriage.controller';
 export * from './course/course.controller';
+export * from './payments/payments.controller';

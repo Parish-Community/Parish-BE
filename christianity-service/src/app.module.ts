@@ -6,6 +6,7 @@ import {
   CourseController,
   MarriageController,
   ParishClusterController,
+  PaymentsController,
   ProfileController,
   RoleController,
 } from './modules/controller';
@@ -14,6 +15,7 @@ import {
   CourseService,
   MarriageService,
   ParishClusterService,
+  PaymentsService,
   ProfileService,
   RoleService,
 } from './modules/service';
@@ -22,6 +24,7 @@ import {
   CourseModule,
   MarriageModule,
   ParishClusterModule,
+  PaymentsModule,
   ProfileModule,
   RoleModule,
 } from './modules';
@@ -39,6 +42,7 @@ import {
     AccountModule,
     MarriageModule,
     CourseModule,
+    PaymentsModule,
   ],
   controllers: [
     ProfileController,
@@ -47,6 +51,7 @@ import {
     AccountController,
     MarriageController,
     CourseController,
+    PaymentsController,
   ],
   providers: [
     ProfileService,
@@ -55,6 +60,7 @@ import {
     AccountService,
     MarriageService,
     CourseService,
+    PaymentsService,
   ],
 })
 export class AppModule {}
