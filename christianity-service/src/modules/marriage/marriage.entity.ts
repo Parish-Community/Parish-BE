@@ -11,6 +11,7 @@ import {
 import { Account } from '../account/account.entity';
 import { GENDER, PARISH_CLUSTER } from '@/core/constants';
 import { Course } from '../course/entities/course.entity';
+import { Attendance } from '../course/entities/attendance.entity';
 
 @Entity({
   name: 'marriage',
@@ -174,4 +175,7 @@ export class Marriage extends ShareBaseEntity {
 
   @Column({ type: 'boolean', nullable: false, default: false })
   first_isCompleteCourse: boolean;
+
+  @OneToMany(() => Attendance, (attendance) => attendance.marriage)
+  attendances: Attendance[];
 }

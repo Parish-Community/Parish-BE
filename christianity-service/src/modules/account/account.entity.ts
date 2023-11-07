@@ -30,15 +30,14 @@ export class Account extends ShareBaseEntity {
     length: 500,
     nullable: false,
   })
-  fullname: string;
+  christianName: string;
 
   @Column({
     type: 'varchar',
     length: 500,
     nullable: false,
-    unique: true,
   })
-  email: string;
+  fullname: string;
 
   @Column({
     type: 'varchar',
@@ -57,27 +56,9 @@ export class Account extends ShareBaseEntity {
   @Column({
     type: 'boolean',
     nullable: false,
-    default: false,
-  })
-  firstLogin: boolean;
-
-  @Column({
-    type: 'boolean',
-    nullable: false,
     default: true,
   })
   isActive: boolean;
-
-  @Column({
-    type: 'int',
-    nullable: true,
-  })
-  profileId: number;
-  @ManyToOne(() => Profile, (profile) => profile.accounts, {
-    onDelete: 'CASCADE',
-  })
-  @JoinColumn({ name: 'profileId', referencedColumnName: 'id' })
-  profile: Profile;
 
   @Column({
     type: 'int',
@@ -95,9 +76,20 @@ export class Account extends ShareBaseEntity {
   })
   refresh_token: string;
 
-  @OneToMany(() => Attendance, (attendance) => attendance.account)
-  attendances: Attendance[];
-
   @OneToMany(() => Payment, (payment) => payment.account)
   payments: Attendance[];
+
+  @Column({
+    type: 'boolean',
+    nullable: false,
+    default: false,
+  })
+  isRegisterMarriage: boolean;
+
+  @Column({
+    type: 'varchar',
+    length: 500,
+    nullable: true,
+  })
+  address: string;
 }

@@ -59,4 +59,10 @@ export class Course extends ShareBaseEntity {
   })
   @JoinColumn({ name: 'profileId', referencedColumnName: 'id' })
   profile: Profile;
+
+  @Column({
+    type: 'int',
+    nullable: true,
+  })
+  createdBy: number;
 }

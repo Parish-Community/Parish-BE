@@ -23,4 +23,7 @@ export class ParishCluster extends ShareBaseEntity {
 
   @OneToMany(() => Profile, (profile) => profile.parish_cluster)
   profiles: Profile[];
+
+  @OneToMany(() => Profile, (profile) => profile.locationBaptism)
+  locationBaptism: Profile[];
 }

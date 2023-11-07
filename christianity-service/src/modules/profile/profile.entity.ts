@@ -31,7 +31,7 @@ export class Profile extends ShareBaseEntity {
 
   @Column({
     type: 'date',
-    nullable: true,
+    nullable: false,
   })
   dateOfBirth: Date;
 
@@ -93,13 +93,6 @@ export class Profile extends ShareBaseEntity {
   parish: string;
 
   @Column({
-    type: 'boolean',
-    nullable: false,
-    default: false,
-  })
-  isRequestAccount: boolean;
-
-  @Column({
     type: 'int',
     nullable: false,
   })
@@ -113,9 +106,6 @@ export class Profile extends ShareBaseEntity {
   })
   parish_cluster: ParishCluster;
 
-  @OneToMany(() => Account, (account) => account.profile)
-  accounts: Account[];
-
   @Column({
     type: 'enum',
     nullable: true,
@@ -125,4 +115,31 @@ export class Profile extends ShareBaseEntity {
 
   @OneToMany(() => Course, (course) => course.profile)
   course: Course[];
+
+  @Column({
+    type: 'boolean',
+    nullable: false,
+    default: false,
+  })
+  isBaptism: boolean;
+
+  @Column({
+    type: 'date',
+    nullable: false,
+  })
+  dateBaptism: Date;
+
+  @Column({
+    type: 'int',
+    nullable: false,
+  })
+  locationBaptismId: number;
+  @ManyToOne(() => ParishCluster, (parish_cluster) => parish_cluster.profiles, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({
+    name: 'parish_clusterId',
+    referencedColumnName: 'parish_clusterId',
+  })
+  locationBaptism: ParishCluster;
 }
