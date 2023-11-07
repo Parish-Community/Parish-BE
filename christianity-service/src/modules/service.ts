@@ -4,3 +4,4 @@ export * from './profile/profile.service';
 export * from './parish_cluster/parish_cluster.service';
 export * from './marriage/marriage.service';
 export * from './course/course.service';
+export * from './payments/payments.service';
