@@ -1,5 +1,6 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { HasMimeType, IsFile, MaxFileSize } from 'nestjs-form-data';
+import { IsInt, IsNotEmpty, IsString, MaxLength } from 'class-validator';
 
 export class CreateUploadDto {
   @ApiProperty({ type: 'string', format: 'binary' })
@@ -32,3 +33,17 @@ export class UploadInput {
 }
 
 export class UpdateUploadInput extends PartialType(UploadInput) {}
+
+export class FileUploadDto {
+  @IsString()
+  @IsNotEmpty()
+  houseHoldCode: string;
+
+  @IsInt()
+  @IsNotEmpty()
+  parish_clusterId: number;
+
+  @IsString()
+  @IsNotEmpty()
+  address: string;
+}

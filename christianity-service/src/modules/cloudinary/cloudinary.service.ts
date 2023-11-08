@@ -18,4 +18,18 @@ export class CloudinaryService {
       streamifier.createReadStream(file.buffer).pipe(uploadStream);
     });
   }
+
+  uploadOtherFile(file: Express.Multer.File): Promise<CloudinaryResponse> {
+    console.log(file);
+    return new Promise<CloudinaryResponse>((resolve, reject) => {
+      cloudinary.uploader.upload(
+        file.originalname,
+        { resource_type: 'raw' },
+        (error: any, result: CloudinaryResponse) => {
+          if (error) return reject(error);
+          resolve(result);
+        },
+      );
+    });
+  }
 }

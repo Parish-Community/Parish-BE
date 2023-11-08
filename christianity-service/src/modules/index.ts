@@ -4,3 +4,5 @@ export * from './parishioner/parishioner.module';
 export * from './parish-cluster/parish-cluster.module';
 export * from './course/course.module';
 export * from './payments/payments.module';
+export * from './cloudinary/cloudinary.module';
+export * from './house-hold/house-hold.module';
