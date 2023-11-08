@@ -44,3 +44,11 @@ export enum PaymentStatus {
 export enum Currency {
   Usd = 'usd',
 }
+
+export enum RoleHouseMember {
+  HEAD = 'head',
+  WIFE = 'wife',
+  SON = 'son',
+  DAUGHTER = 'daughter',
+  OTHER = 'other',
+}

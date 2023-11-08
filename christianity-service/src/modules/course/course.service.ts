@@ -4,24 +4,21 @@ import { DataSource, Repository, SelectQueryBuilder } from 'typeorm';
 import { AppResponse } from '@/core/app.response';
 import { ErrorHandler } from '@/core/common/error';
 import { Course } from './entities/course.entity';
-import { Attendance } from './entities/attendance.entity';
 import { GetCourseResDto } from './dto/res';
 import { CreateCourseReqDto } from './dto/req';
-import { Profile } from '../profile/profile.entity';
+import { Parishioner } from '../parishioner/parishioner.entity';
 import { Account } from '../account/account.entity';
 
 @Injectable()
 export class CourseService {
   private _dataSource: DataSource;
   private _courseRepository: Repository<Course>;
-  private _attendanceRepository: Repository<Attendance>;
-  private _profileRepository: Repository<Profile>;
+  private _profileRepository: Repository<Parishioner>;
   private _accountRepository: Repository<Account>;
   constructor(@Inject(TYPEORM) dataSource: DataSource) {
     this._dataSource = dataSource;
     this._courseRepository = dataSource.getRepository(Course);
-    this._attendanceRepository = dataSource.getRepository(Attendance);
-    this._profileRepository = dataSource.getRepository(Profile);
+    this._profileRepository = dataSource.getRepository(Parishioner);
     this._accountRepository = dataSource.getRepository(Account);
   }
 

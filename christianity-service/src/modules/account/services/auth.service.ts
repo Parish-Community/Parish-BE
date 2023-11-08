@@ -33,22 +33,22 @@ export class AuthService {
   async register(payload: RegisterReqDto): Promise<RegisterAccountResDto> {
     try {
       const { email, password, phonenumber, confirmPassword } = payload;
-      const account = await this._accountRepository.findOne({
-        where: { email },
-        relations: ['profile', 'role'],
-      });
+      // const account = await this._accountRepository.findOne({
+      //   where: { email },
+      //   relations: ['profile', 'role'],
+      // });
 
-      if (account) {
-        return AppResponse.setUserErrorResponse<RegisterAccountResDto>(
-          ErrorHandler.alreadyExists(`The account with ${email} already exist`),
-        );
-      }
+      // if (account) {
+      //   return AppResponse.setUserErrorResponse<RegisterAccountResDto>(
+      //     ErrorHandler.alreadyExists(`The account with ${email} already exist`),
+      //   );
+      // }
 
-      if (phonenumber === account?.phonenumber) {
-        return AppResponse.setUserErrorResponse<RegisterAccountResDto>(
-          ErrorHandler.alreadyExists(`The phonenumber ${phonenumber}`),
-        );
-      }
+      // if (phonenumber === account?.phonenumber) {
+      //   return AppResponse.setUserErrorResponse<RegisterAccountResDto>(
+      //     ErrorHandler.alreadyExists(`The phonenumber ${phonenumber}`),
+      //   );
+      // }
 
       if (password !== confirmPassword) {
         return AppResponse.setUserErrorResponse<RegisterAccountResDto>(

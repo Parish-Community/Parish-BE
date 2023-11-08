@@ -8,9 +8,7 @@ import {
   OneToOne,
 } from 'typeorm';
 import { Account } from '../../account/account.entity';
-import { Marriage } from '@/modules/marriage/marriage.entity';
-import { Attendance } from './attendance.entity';
-import { Profile } from '@/modules/profile/profile.entity';
+import { Parishioner } from '@/modules/parishioner/parishioner.entity';
 import { COURSE_STATUS } from '@/core/constants';
 
 @Entity({
@@ -36,12 +34,6 @@ export class Course extends ShareBaseEntity {
   })
   endDate: Date;
 
-  @OneToMany(() => Marriage, (m) => m.course)
-  marriages: Marriage[];
-
-  @OneToMany(() => Attendance, (attendance) => attendance.course)
-  attendances: Attendance[];
-
   @Column({
     type: 'enum',
     enum: COURSE_STATUS,
@@ -51,18 +43,14 @@ export class Course extends ShareBaseEntity {
 
   @Column({
     type: 'int',
-    nullable: true,
+    nullable: false,
   })
-  profileId: number;
-  @ManyToOne(() => Profile, (profile) => profile.course, {
-    onDelete: 'CASCADE',
-  })
-  @JoinColumn({ name: 'profileId', referencedColumnName: 'id' })
-  profile: Profile;
+  createdBy: number;
 
   @Column({
     type: 'int',
-    nullable: true,
+    nullable: false,
+    default: 15,
   })
-  createdBy: number;
+  totalMember: number;
 }

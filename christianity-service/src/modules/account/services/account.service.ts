@@ -3,7 +3,7 @@ import { DataSource, Repository, SelectQueryBuilder } from 'typeorm';
 import { TYPEORM } from '@/core/constants';
 import { AppResponse } from '@/core/app.response';
 import { Account } from '../account.entity';
-import { Profile } from '@/modules/profile/profile.entity';
+import { Parishioner } from '@/modules/parishioner/parishioner.entity';
 import { CreateAccountResDto, GetAccountResDto } from '../dto/res.dto';
 import { CreateAccountReqDto } from '../dto/req.dto';
 import { ErrorHandler } from '@/core/common/error';
@@ -13,11 +13,11 @@ import { Bcrypt } from '@/core/utils/bcrypt';
 export class AccountService {
   private _dataSource: DataSource;
   private _accountRepository: Repository<Account>;
-  private _profileRepository: Repository<Profile>;
+  private _profileRepository: Repository<Parishioner>;
   constructor(@Inject(TYPEORM) dataSource: DataSource) {
     this._dataSource = dataSource;
     this._accountRepository = dataSource.getRepository(Account);
-    this._profileRepository = dataSource.getRepository(Profile);
+    this._profileRepository = dataSource.getRepository(Parishioner);
   }
 
   async getAccount(id: number): Promise<GetAccountResDto> {

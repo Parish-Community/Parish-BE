@@ -7,10 +7,8 @@ import {
   OneToMany,
   OneToOne,
 } from 'typeorm';
-import { Profile } from '@/modules/profile/profile.entity';
+import { Parishioner } from '@/modules/parishioner/parishioner.entity';
 import { Role } from '@/modules/role/role.entity';
-import { Marriage } from '../marriage/marriage.entity';
-import { Attendance } from '../course/entities/attendance.entity';
 import { Payment } from '../payments/payments.entity';
 
 @Entity({
@@ -64,6 +62,17 @@ export class Account extends ShareBaseEntity {
     type: 'int',
     nullable: false,
   })
+  parishionerId: number;
+  @ManyToOne(() => Parishioner, (p) => p.accounts, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'parishionerId', referencedColumnName: 'id' })
+  parishioner: Parishioner;
+
+  @Column({
+    type: 'int',
+    nullable: false,
+  })
   roleId: number;
   @ManyToOne(() => Role, (role) => role.accounts, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'roleId', referencedColumnName: 'roleId' })
@@ -77,7 +86,7 @@ export class Account extends ShareBaseEntity {
   refresh_token: string;
 
   @OneToMany(() => Payment, (payment) => payment.account)
-  payments: Attendance[];
+  payments: Payment[];
 
   @Column({
     type: 'boolean',
@@ -92,4 +101,12 @@ export class Account extends ShareBaseEntity {
     nullable: true,
   })
   address: string;
+
+  @Column({
+    type: 'varchar',
+    length: 500,
+    nullable: true,
+    unique: true,
+  })
+  email: string;
 }
