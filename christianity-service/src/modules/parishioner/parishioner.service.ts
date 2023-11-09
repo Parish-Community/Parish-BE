@@ -6,17 +6,23 @@ import { CreateProfileReqDto, UpdateProfileReqDto } from './dto/req.dto';
 import {
   GetProfileResDto,
   GetProfilesResDto,
+  RegistrationAccountResDto,
   UpdateProfileResDto,
 } from './dto/res.dto';
 import { AppResponse } from '@/core/app.response';
+import { Account } from '../account/account.entity';
+import { ErrorHandler } from '@/core/common/error';
+import { Bcrypt } from '@/core/utils/bcrypt';
 
 @Injectable()
 export class ParishionerService {
   private _dataSource: DataSource;
   private _profileRepository: Repository<Parishioner>;
+  private _accountRepository: Repository<Account>;
   constructor(@Inject(TYPEORM) dataSource: DataSource) {
     this._dataSource = dataSource;
     this._profileRepository = dataSource.getRepository(Parishioner);
+    this._accountRepository = dataSource.getRepository(Account);
   }
 
   async createProfile(data: CreateProfileReqDto): Promise<GetProfileResDto> {
@@ -47,6 +53,19 @@ export class ParishionerService {
   async getProfiles(): Promise<GetProfilesResDto> {
     try {
       const profiles = await this._profileRepository.find();
+      return AppResponse.setSuccessResponse<GetProfilesResDto>(profiles);
+    } catch (error) {
+      return AppResponse.setAppErrorResponse<GetProfilesResDto>(error.message);
+    }
+  }
+
+  async getProfilesReqAccount(): Promise<GetProfilesResDto> {
+    try {
+      const profiles = await this._profileRepository.find({
+        where: {
+          isReqAccount: true,
+        },
+      });
       return AppResponse.setSuccessResponse<GetProfilesResDto>(profiles);
     } catch (error) {
       return AppResponse.setAppErrorResponse<GetProfilesResDto>(error.message);
@@ -170,6 +189,70 @@ export class ParishionerService {
       return AppResponse.setAppErrorResponse<UpdateProfileResDto>(
         error.message,
       );
+    }
+  }
+
+  async importData(data: any): Promise<any> {
+    try {
+      const seedImportData = await this._profileRepository.save(data);
+      return seedImportData;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async registrationAccount(payload: any): Promise<RegistrationAccountResDto> {
+    try {
+      const profiles = await this._profileRepository.find({
+        where: { phonenumber: payload.phonenumber },
+      });
+
+      if (!profiles) {
+        return AppResponse.setAppErrorResponse<RegistrationAccountResDto>(
+          'Profile not found',
+        );
+      }
+
+      const existPhoneNumber = await this._accountRepository.findOne({
+        where: { phonenumber: payload.phonenumber },
+      });
+
+      if (payload.phonenumber === existPhoneNumber?.phonenumber) {
+        return AppResponse.setUserErrorResponse<RegistrationAccountResDto>(
+          ErrorHandler.alreadyExists('The phone number'),
+        );
+      }
+
+      const hashPassword = Bcrypt.handleHashPassword(payload.password);
+      const data = {
+        fullname: payload.fullname,
+        christianName: payload.christianName,
+        parishionerId: profiles[0].id,
+        password: hashPassword,
+        roleId: 2,
+        phonenumber: payload.phonenumber,
+      };
+
+      const updateProfile = await this._profileRepository.update(
+        { id: profiles[0].id },
+        { isReqAccount: true },
+      );
+      const account = await this._accountRepository
+        .createQueryBuilder()
+        .insert()
+        .into(Account)
+        .values(data)
+        .execute();
+
+      return AppResponse.setSuccessResponse<RegistrationAccountResDto>(
+        account.identifiers[0].id,
+        {
+          status: 201,
+          message: 'Created',
+        },
+      );
+    } catch (error) {
+      throw error;
     }
   }
 }

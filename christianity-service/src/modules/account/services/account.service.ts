@@ -24,7 +24,7 @@ export class AccountService {
     try {
       const account = await this._accountRepository.findOne({
         where: { id },
-        relations: ['profile', 'role'],
+        relations: ['parishioner', 'role'],
       });
       if (!account) {
         return AppResponse.setUserErrorResponse<GetAccountResDto>(

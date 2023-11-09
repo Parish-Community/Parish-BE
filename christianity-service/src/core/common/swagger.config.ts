@@ -2,8 +2,8 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 export default function Swagger(app) {
   const config = new DocumentBuilder()
-    .setTitle('Parish Platform API')
-    .setDescription('The Parish Platform API description')
+    .setTitle('Parish Service API')
+    .setDescription('The Parish Service API description')
     .setVersion('1.0')
     .addBearerAuth(
       {

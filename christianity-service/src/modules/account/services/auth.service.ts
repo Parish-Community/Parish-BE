@@ -33,22 +33,22 @@ export class AuthService {
   async register(payload: RegisterReqDto): Promise<RegisterAccountResDto> {
     try {
       const { email, password, phonenumber, confirmPassword } = payload;
-      // const account = await this._accountRepository.findOne({
-      //   where: { email },
-      //   relations: ['profile', 'role'],
-      // });
+      const account = await this._accountRepository.findOne({
+        where: { email },
+        relations: ['parishioner', 'role'],
+      });
 
-      // if (account) {
-      //   return AppResponse.setUserErrorResponse<RegisterAccountResDto>(
-      //     ErrorHandler.alreadyExists(`The account with ${email} already exist`),
-      //   );
-      // }
+      if (account) {
+        return AppResponse.setUserErrorResponse<RegisterAccountResDto>(
+          ErrorHandler.alreadyExists(`The account with ${email} already exist`),
+        );
+      }
 
-      // if (phonenumber === account?.phonenumber) {
-      //   return AppResponse.setUserErrorResponse<RegisterAccountResDto>(
-      //     ErrorHandler.alreadyExists(`The phonenumber ${phonenumber}`),
-      //   );
-      // }
+      if (phonenumber === account?.phonenumber) {
+        return AppResponse.setUserErrorResponse<RegisterAccountResDto>(
+          ErrorHandler.alreadyExists(`The phonenumber ${phonenumber}`),
+        );
+      }
 
       if (password !== confirmPassword) {
         return AppResponse.setUserErrorResponse<RegisterAccountResDto>(
@@ -124,7 +124,7 @@ export class AuthService {
     try {
       const account = await this._accountRepository.findOne({
         where: { id: accountId },
-        relations: ['profile', 'role'],
+        relations: ['parishioner', 'role'],
       });
       if (!account) {
         return ErrorHandler.notFound(`Account ${accountId}`);
@@ -156,7 +156,7 @@ export class AuthService {
       const { phonenumber, password } = payload;
       const account = await this._accountRepository.findOne({
         where: { phonenumber },
-        relations: ['profile', 'role'],
+        relations: ['parishioner', 'role'],
       });
       if (!account) {
         return ErrorHandler.notFound(`The account with ${phonenumber}`);
@@ -201,6 +201,7 @@ export class AuthService {
   private createAuthPayload(account: Account): IAuthPayload {
     return {
       accountId: account['id'],
+      christianName: account['christianName'],
       fullname: account['fullname'],
       phonenumber: account['phonenumber'],
       email: account['email'],

@@ -23,7 +23,6 @@ import { HouseHoldService } from './house-hold.service';
 export class HouseHoldController {
   constructor(private readonly houseHoldService: HouseHoldService) {}
 
-  // get all house-hold
   @Get('list')
   async getHouseHolds() {
     return await this.houseHoldService.getHouseHolds();

@@ -63,4 +63,15 @@ export class AuthController {
       account.refreshToken,
     );
   }
+
+  @Get('/verify-token')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access_token')
+  verifyToken(@GetAccount() account) {
+    const data = {
+      status: 200,
+      payload: account.payload,
+    };
+    return data;
+  }
 }
