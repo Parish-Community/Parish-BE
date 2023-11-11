@@ -52,7 +52,9 @@ export class ParishionerService {
 
   async getProfiles(): Promise<GetProfilesResDto> {
     try {
-      const profiles = await this._profileRepository.find();
+      const profiles = await this._profileRepository.find({
+        relations: ['parish_cluster'],
+      });
       return AppResponse.setSuccessResponse<GetProfilesResDto>(profiles);
     } catch (error) {
       return AppResponse.setAppErrorResponse<GetProfilesResDto>(error.message);
@@ -195,7 +197,12 @@ export class ParishionerService {
   async importData(data: any): Promise<any> {
     try {
       const seedImportData = await this._profileRepository.save(data);
-      return seedImportData;
+      const res = {
+        status: 200,
+        message: 'Import data successfully',
+        data: seedImportData,
+      };
+      return res;
     } catch (error) {
       throw error;
     }

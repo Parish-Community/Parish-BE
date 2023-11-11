@@ -26,7 +26,12 @@ export class HouseHoldService {
   async importData(data: any): Promise<any> {
     try {
       const houseHolds = await this._houseHoldRepository.save(data);
-      return houseHolds;
+      const res = {
+        status: 200,
+        message: 'Import data successfully',
+        data: houseHolds,
+      };
+      return res;
     } catch (error) {
       throw error;
     }
