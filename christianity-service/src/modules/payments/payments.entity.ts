@@ -28,6 +28,13 @@ export class Payment extends ShareBaseEntity {
   description: string;
 
   @Column({
+    type: 'varchar',
+    length: 500,
+    nullable: true,
+  })
+  customerId: string;
+
+  @Column({
     type: 'enum',
     enum: PaymentStatus,
     default: PaymentStatus.Pending,

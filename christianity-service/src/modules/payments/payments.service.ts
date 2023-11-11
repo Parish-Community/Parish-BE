@@ -13,6 +13,7 @@ import Stripe from 'stripe';
 import { CreatePaymentDto } from './dto/req.dto';
 import { IAuthPayload } from '../account/account.interface';
 import { Account } from '../account/account.entity';
+import { ICreateCustomerStripe } from './payments.interface';
 
 @Injectable()
 export class PaymentsService {
@@ -30,30 +31,136 @@ export class PaymentsService {
 
   async createPayment(payload: CreatePaymentDto, account: IAuthPayload) {
     let stripeSession: Stripe.Response<Stripe.Checkout.Session>;
+    let customerId: any;
     try {
-      const accountRecord = await this._accountRepository.findOneBy({
-        id: account.accountId,
+      const paymentRecord = await this._paymentService.findOneBy({
+        accountId: account.accountId,
       });
-      stripeSession = await this.createStripeSession(payload, account);
+
+      if (!paymentRecord) {
+        const customerData: ICreateCustomerStripe = {
+          fullname: account.fullname,
+          email: account.email,
+          description: 'Customer for one time checkout',
+        };
+        const customer = await this.createCustomerStripe(customerData);
+        customerId = customer.id;
+      }
+
+      customerId = paymentRecord.customerId;
+
+      const cardPaymentMethod = await this.stripeProvider
+        .getInstance()
+        .paymentMethods.create({
+          type: 'card',
+          card: {
+            number: payload.cardNumber,
+            exp_month: payload.exp_month,
+            exp_year: payload.exp_year,
+            cvc: payload.cvc,
+          },
+        });
+      console.log(cardPaymentMethod);
+
+      const paymentIntent = await this.stripeProvider
+        .getInstance()
+        .paymentIntents.create({
+          amount: payload.amount,
+          currency: payload.currency,
+          payment_method_types: ['card'],
+          customer: customerId,
+          description: payload.description,
+          receipt_email: account.email,
+          payment_method: cardPaymentMethod.id,
+          // confirm: true,
+          // payment_method: 'pm_card_visa',
+        });
+
       const newPayment = {
-        stripeSessionId: stripeSession.id,
+        stripeSessionId: paymentIntent.id,
         amount: payload.amount,
         currency: payload.currency,
         accountId: account.accountId,
         description: payload.description,
         initiatedAt: this.getCurrentTimestamp(),
-        paymentStatus: PaymentStatus.Pending,
+        paymentStatus: PaymentStatus.Paid,
         finalisedAt: null,
+        customerId: customerId,
       };
 
       await this._paymentService.save(newPayment);
 
-      return { url: stripeSession.url };
+      return { status: 200, paymentIntent: paymentIntent };
     } catch (error) {
       Logger.error(error);
       await this.expireStripeSession(stripeSession);
 
       throw new InternalServerErrorException(error);
+    }
+  }
+
+  // async createPayment(payload: CreatePaymentDto, account: IAuthPayload) {
+  //   let stripeSession: Stripe.Response<Stripe.Checkout.Session>;
+  //   let customer: any;
+  //   try {
+  //     const paymentRecord = await this._paymentService.findOneBy({
+  //       accountId: account.accountId,
+  //     });
+
+  //     if (!paymentRecord) {
+  //       const customerData: ICreateCustomerStripe = {
+  //         fullname: account.fullname,
+  //         email: account.email,
+  //         description: 'Customer for one time checkout',
+  //       };
+  //       customer = await this.createCustomerStripe(customerData);
+  //     }
+
+  //     stripeSession = await this.createStripeSession(payload, account);
+  //     const newPayment = {
+  //       stripeSessionId: stripeSession.id,
+  //       amount: payload.amount,
+  //       currency: payload.currency,
+  //       accountId: account.accountId,
+  //       description: payload.description,
+  //       initiatedAt: this.getCurrentTimestamp(),
+  //       paymentStatus: PaymentStatus.Pending,
+  //       finalisedAt: null,
+  //     };
+
+  //     await this._paymentService.save(newPayment);
+
+  //     return { status: 200, url: stripeSession.url };
+  //   } catch (error) {
+  //     Logger.error(error);
+  //     await this.expireStripeSession(stripeSession);
+
+  //     throw new InternalServerErrorException(error);
+  //   }
+  // }
+
+  private async createCustomerStripe(
+    customerData: ICreateCustomerStripe,
+  ): Promise<any> {
+    try {
+      const customer = await this.stripeProvider
+        .getInstance()
+        .customers.create({
+          name: customerData.fullname,
+          email: customerData.email,
+          description: customerData.description,
+        });
+
+      return customer;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  private async getCustomerStripe(): Promise<any> {
+    try {
+    } catch (error) {
+      console.log(error);
     }
   }
 

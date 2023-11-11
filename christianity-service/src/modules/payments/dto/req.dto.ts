@@ -11,6 +11,26 @@ import { ApiProperty, OmitType, PartialType } from '@nestjs/swagger';
 
 export class CreatePaymentDto {
   @IsNotEmpty()
+  @IsString()
+  @ApiProperty()
+  public cardNumber: string;
+
+  @IsNotEmpty()
+  @IsNumber()
+  @ApiProperty()
+  public exp_month: number;
+
+  @IsNotEmpty()
+  @IsNumber()
+  @ApiProperty()
+  public exp_year: number;
+
+  @IsNotEmpty()
+  @IsString()
+  @ApiProperty()
+  public cvc: string;
+
+  @IsNotEmpty()
   @IsNumber()
   @ApiProperty()
   public amount: number;
