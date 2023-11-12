@@ -134,4 +134,7 @@ export class Parishioner extends ShareBaseEntity {
 
   @OneToMany(() => HouseHoldMember, (hMember) => hMember.parishioner)
   houseHoldMember: HouseHoldMember[];
+
+  @OneToMany(() => Course, (course) => course.parishioner)
+  courses: Course[];
 }

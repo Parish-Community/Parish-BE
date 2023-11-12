@@ -1,6 +1,6 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { DataSource, Repository, SelectQueryBuilder } from 'typeorm';
-import { TYPEORM } from '../../core/constants';
+import { POSITION_PARISH, TYPEORM } from '../../core/constants';
 import { Parishioner } from './parishioner.entity';
 import { CreateProfileReqDto, UpdateProfileReqDto } from './dto/req.dto';
 import {
@@ -54,6 +54,19 @@ export class ParishionerService {
     try {
       const profiles = await this._profileRepository.find({
         relations: ['parish_cluster'],
+      });
+      return AppResponse.setSuccessResponse<GetProfilesResDto>(profiles);
+    } catch (error) {
+      return AppResponse.setAppErrorResponse<GetProfilesResDto>(error.message);
+    }
+  }
+
+  async getProfilesMonk(): Promise<GetProfilesResDto> {
+    try {
+      const profiles = await this._profileRepository.find({
+        where: {
+          position: POSITION_PARISH.MONK,
+        },
       });
       return AppResponse.setSuccessResponse<GetProfilesResDto>(profiles);
     } catch (error) {

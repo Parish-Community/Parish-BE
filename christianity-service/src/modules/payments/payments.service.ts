@@ -29,6 +29,18 @@ export class PaymentsService {
     this._accountRepository = dataSource.getRepository(Account);
   }
 
+  async getPaymentsDonations(): Promise<any> {
+    try {
+      const payments = await this._paymentService.find({
+        relations: ['account'],
+      });
+
+      return AppResponse.setSuccessResponse<any>(payments);
+    } catch (error) {
+      return AppResponse.setAppErrorResponse<any>(error.message);
+    }
+  }
+
   async createPayment(payload: CreatePaymentDto, account: IAuthPayload) {
     let stripeSession: Stripe.Response<Stripe.Checkout.Session>;
     let customerId: any;

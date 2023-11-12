@@ -50,6 +50,15 @@ export class Course extends ShareBaseEntity {
   @Column({
     type: 'int',
     nullable: false,
+  })
+  teacherId: number;
+  @ManyToOne(() => Parishioner, (p) => p.courses, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'teacherId', referencedColumnName: 'id' })
+  parishioner: Parishioner;
+
+  @Column({
+    type: 'int',
+    nullable: false,
     default: 15,
   })
   totalMember: number;

@@ -25,7 +25,7 @@ export class CourseService {
   async getCourses(): Promise<GetCourseResDto> {
     try {
       const courses = await this._courseRepository.find({
-        relations: ['profile'],
+        relations: ['parishioner'],
       });
       return AppResponse.setSuccessResponse<GetCourseResDto>(courses);
     } catch (error) {
@@ -59,11 +59,19 @@ export class CourseService {
         );
       }
 
+      const newCourse = {
+        courseName: data.courseName,
+        startDate: data.startDate,
+        endDate: data.endDate,
+        teacherId: profileId,
+        createdBy: accountId,
+      };
+
       const course = await this._courseRepository
         .createQueryBuilder()
         .insert()
         .into(Course)
-        .values(data)
+        .values(newCourse)
         .execute();
 
       return AppResponse.setSuccessResponse<GetCourseResDto>(

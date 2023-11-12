@@ -44,6 +44,14 @@ export class ParishionerController {
     return await this.parishionerService.getProfiles();
   }
 
+  @Get('monks')
+  // @Auth(ACCOUNT_ROLE.ADM)
+  @ApiOperation({ summary: 'Get profile is monk' })
+  @ApiOkResponse({ description: 'The list profile were returned successfully' })
+  async getProfilesMonk(): Promise<GetProfilesResDto> {
+    return await this.parishionerService.getProfilesMonk();
+  }
+
   @Get(':id')
   @Auth(ACCOUNT_ROLE.ADM)
   @ApiOperation({ summary: 'Get profile by id' })
