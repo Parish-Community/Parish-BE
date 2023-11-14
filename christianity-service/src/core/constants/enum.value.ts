@@ -52,3 +52,10 @@ export enum RoleHouseMember {
   DAUGHTER = 'daughter',
   OTHER = 'other',
 }
+
+export enum STATUS_COUPLE {
+  PENDING = 'pending',
+  ACCEPT = 'accept',
+  REJECT = 'reject',
+  COMPLETED = 'completed',
+}

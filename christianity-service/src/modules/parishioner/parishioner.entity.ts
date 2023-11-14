@@ -6,6 +6,7 @@ import { ParishCluster } from '../parish-cluster/parish-cluster.entity';
 import { Course } from '../course/entities/course.entity';
 import { HouseHold } from '../house-hold/entities/house-hold.entity';
 import { HouseHoldMember } from '../house-hold/entities/house-hold-member.entity';
+import { CoupleRegistration } from '../course/entities/couple-registration.entity';
 
 @Entity({
   name: 'parishioner',
@@ -77,6 +78,7 @@ export class Parishioner extends ShareBaseEntity {
     type: 'varchar',
     length: 500,
     nullable: false,
+    default: 'Hà Tĩnh',
   })
   diocese: string;
 
@@ -84,6 +86,7 @@ export class Parishioner extends ShareBaseEntity {
     type: 'varchar',
     length: 500,
     nullable: false,
+    default: 'Tràng Lưu',
   })
   parish: string;
 
@@ -105,6 +108,7 @@ export class Parishioner extends ShareBaseEntity {
     type: 'enum',
     nullable: true,
     enum: POSITION_PARISH,
+    default: POSITION_PARISH.CHRISTIANITY,
   })
   position: POSITION_PARISH;
 
@@ -137,4 +141,10 @@ export class Parishioner extends ShareBaseEntity {
 
   @OneToMany(() => Course, (course) => course.parishioner)
   courses: Course[];
+
+  @OneToMany(() => CoupleRegistration, (cr) => cr.parishioner1)
+  coupleRegistration1: CoupleRegistration[];
+
+  @OneToMany(() => CoupleRegistration, (cr) => cr.parishioner2)
+  coupleRegistration2: CoupleRegistration[];
 }

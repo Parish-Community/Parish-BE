@@ -56,3 +56,74 @@ export class CreateCourseReqDto {
   })
   courseStatus: COURSE_STATUS;
 }
+
+export class UpdateCourseReqDto extends PartialType(CreateCourseReqDto) {}
+
+export class CoupleRegisReqDto {
+  @IsNotEmpty()
+  @IsString()
+  @ApiProperty()
+  partner2_christianName: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @ApiProperty()
+  partner2_fullname: string;
+
+  @IsNotEmpty()
+  @IsEnum(GENDER, {
+    message: `The type of gender must be belonged to the enum ${Object.values(
+      GENDER,
+    )}`,
+  })
+  @ApiProperty()
+  gender?: GENDER;
+  partner2_gender: GENDER;
+
+  @IsOptional()
+  @IsString({ message: 'The phone number must be string' })
+  @MinLength(10)
+  @MaxLength(10)
+  @IsNotEmpty()
+  @ApiProperty()
+  partner2_phonenumber: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @ApiProperty()
+  partner2_dateOfBirth: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @ApiProperty()
+  partner2_name_father: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @ApiProperty()
+  partner2_name_mother: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @ApiProperty()
+  partner2_address: string;
+
+  @IsNotEmpty({ message: 'The parish_clusterId is required' })
+  @IsInt()
+  @ApiProperty()
+  parish_clusterId: number;
+}
+
+export class AcceptRegisReqDto {
+  @IsNotEmpty()
+  @IsInt()
+  @ApiProperty()
+  courseId: number;
+}
+
+export class RejectRegisReqDto {
+  @IsNotEmpty()
+  @IsString()
+  @ApiProperty()
+  reason: string;
+}

@@ -10,6 +10,7 @@ import {
 import { Account } from '../../account/account.entity';
 import { Parishioner } from '@/modules/parishioner/parishioner.entity';
 import { COURSE_STATUS } from '@/core/constants';
+import { CoupleRegistration } from './couple-registration.entity';
 
 @Entity({
   name: 'course',
@@ -62,4 +63,7 @@ export class Course extends ShareBaseEntity {
     default: 15,
   })
   totalMember: number;
+
+  @OneToMany(() => CoupleRegistration, (cp) => cp.course)
+  coupleRegistration: CoupleRegistration[];
 }
