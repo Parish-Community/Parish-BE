@@ -6,6 +6,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { CourseService } from './course.service';
@@ -17,6 +18,7 @@ import {
   AcceptRegisReqDto,
   CoupleRegisReqDto,
   CreateCourseReqDto,
+  GetCourseQueriesDto,
   RejectRegisReqDto,
 } from './dto/req';
 
@@ -26,8 +28,10 @@ export class CourseController {
   constructor(private readonly courseService: CourseService) {}
 
   @Get('')
-  async getCourses(): Promise<GetCourseResDto> {
-    return await this.courseService.getCourses();
+  async getCourses(
+    @Query() queries: GetCourseQueriesDto,
+  ): Promise<GetCourseResDto> {
+    return await this.courseService.getCourses(queries);
   }
 
   @Post('')

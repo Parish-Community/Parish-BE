@@ -25,11 +25,28 @@ export class CourseService {
     this._coupleRegisRepository = dataSource.getRepository(CoupleRegistration);
   }
 
-  async getCourses(): Promise<GetCourseResDto> {
+  async getCourses(query: any): Promise<GetCourseResDto> {
     try {
-      const courses = await this._courseRepository.find({
-        relations: ['parishioner'],
-      });
+      let options = {};
+      if (query.courseStatus) {
+        options = {
+          where: {
+            courseStatus: query.courseStatus,
+          },
+          relations: ['parishioner'],
+          order: {
+            id: 'DESC',
+          },
+        };
+      } else {
+        options = {
+          relations: ['parishioner'],
+          order: {
+            id: 'DESC',
+          },
+        };
+      }
+      const courses = await this._courseRepository.find(options);
       return AppResponse.setSuccessResponse<GetCourseResDto>(courses);
     } catch (error) {
       return AppResponse.setAppErrorResponse<GetCourseResDto>(error.message);

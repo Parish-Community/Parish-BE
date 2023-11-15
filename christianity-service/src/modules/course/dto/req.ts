@@ -57,6 +57,20 @@ export class CreateCourseReqDto {
   courseStatus: COURSE_STATUS;
 }
 
+export class GetCourseQueriesDto {
+  @IsOptional()
+  @IsEnum(COURSE_STATUS, {
+    message: `The type of course status must be belonged to the enum ${Object.values(
+      COURSE_STATUS,
+    )}`,
+  })
+  @ApiProperty({
+    required: false,
+    example: COURSE_STATUS.OPEN,
+  })
+  courseStatus?: COURSE_STATUS;
+}
+
 export class UpdateCourseReqDto extends PartialType(CreateCourseReqDto) {}
 
 export class CoupleRegisReqDto {
