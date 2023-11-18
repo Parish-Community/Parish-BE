@@ -213,7 +213,7 @@ export class CourseService {
   async getCoupleRegistration(): Promise<any> {
     try {
       const coupleRegis = await this._coupleRegisRepository.find({
-        relations: ['parishioner1', 'parishioner2'],
+        relations: ['parishioner1', 'parishioner2', 'course'],
       });
 
       return AppResponse.setSuccessResponse<GetCourseResDto>(coupleRegis);
