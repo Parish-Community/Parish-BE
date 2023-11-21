@@ -99,13 +99,12 @@ export class ParishionerService {
           'profile.dateOfBirth',
           'profile.name_father',
           'profile.name_mother',
-          'profile.god_parent',
           'profile.phonenumber',
           'profile.avatar',
           'profile.address',
           'profile.diocese',
+          'profile.isReqMarriageCatechism',
           'profile.parish',
-          'profile.isRequestAccount',
           'parish_cluster.parish_clusterId',
           'parish_cluster.name',
           // 'account.id',
@@ -125,6 +124,19 @@ export class ParishionerService {
         )
         .where('profile.id = :profileId', { profileId: profileId })
         .getOne();
+
+      return AppResponse.setSuccessResponse<GetProfileResDto>(profile);
+    } catch (error) {
+      return AppResponse.setAppErrorResponse<GetProfileResDto>(error.message);
+    }
+  }
+
+  async getPartner(phonenumber: string): Promise<GetProfileResDto> {
+    try {
+      const profile = await this._profileRepository.findOne({
+        where: { phonenumber: phonenumber },
+        relations: ['parish_cluster'],
+      });
 
       return AppResponse.setSuccessResponse<GetProfileResDto>(profile);
     } catch (error) {

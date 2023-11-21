@@ -9,6 +9,7 @@ import { CoupleRegisReqDto, CreateCourseReqDto } from './dto/req';
 import { Parishioner } from '../parishioner/parishioner.entity';
 import { Account } from '../account/account.entity';
 import { CoupleRegistration } from './entities/couple-registration.entity';
+import e from 'express';
 
 @Injectable()
 export class CourseService {
@@ -109,6 +110,7 @@ export class CourseService {
     partner1Id: number,
     payload: CoupleRegisReqDto,
   ): Promise<any> {
+    console.log(payload);
     try {
       const getPartner1 = await this._profileRepository.findOne({
         where: { id: partner1Id },
@@ -132,6 +134,26 @@ export class CourseService {
         );
       }
 
+      const parish_clusterId = (() => {
+        switch (payload.parishCluster) {
+          case 'Tân Lộc':
+            return 1;
+          case 'Tràng Thị':
+            return 2;
+          case 'Tràng Lưu':
+            return 3;
+          case 'Giang Lĩnh':
+            return 4;
+          case 'Đồng Lưu':
+            return 5;
+          case 'Đô Khê':
+            return 6;
+          default:
+            return 0;
+        }
+      })();
+      console.log('debug', parish_clusterId);
+
       const getPartner2 = await this._profileRepository.findOne({
         where: {
           phonenumber: payload.partner2_phonenumber,
@@ -139,7 +161,7 @@ export class CourseService {
           christianName: payload.partner2_christianName,
           name_father: payload.partner2_name_father,
           name_mother: payload.partner2_name_mother,
-          parish_clusterId: payload.parish_clusterId,
+          parish_clusterId: parish_clusterId,
         },
       });
 
@@ -210,6 +232,41 @@ export class CourseService {
     }
   }
 
+  async getCoupleRegisDetail(parishionerId: number): Promise<any> {
+    try {
+      const [parishioner1, parishioner2] = await Promise.all([
+        this._coupleRegisRepository.findOne({
+          where: { partner1Id: parishionerId },
+          relations: ['parishioner1', 'parishioner2', 'course'],
+        }),
+        this._coupleRegisRepository.findOne({
+          where: { partner2Id: parishionerId },
+          relations: ['parishioner1', 'parishioner2', 'course'],
+        }),
+      ]);
+      console.log(parishioner1);
+      console.log(parishioner2);
+
+      if (parishioner1 === undefined && parishioner2 === undefined) {
+        return AppResponse.setUserErrorResponse<GetCourseResDto>(
+          ErrorHandler.notFound(`Registration with ${parishionerId}`),
+        );
+      }
+
+      let coupleRegis = {};
+      if (parishioner1 !== null) {
+        coupleRegis = parishioner1;
+      } else {
+        coupleRegis = parishioner2;
+      }
+      console.log(coupleRegis);
+
+      return AppResponse.setSuccessResponse<GetCourseResDto>(coupleRegis);
+    } catch (error) {
+      return AppResponse.setAppErrorResponse<GetCourseResDto>(error.message);
+    }
+  }
+
   async getCoupleRegistration(): Promise<any> {
     try {
       const coupleRegis = await this._coupleRegisRepository.find({
@@ -221,6 +278,29 @@ export class CourseService {
       return AppResponse.setAppErrorResponse<GetCourseResDto>(error.message);
     }
   }
+
+  // async getCoupleRegistrationDetail(id: number): Promise<any> {
+  //   try {
+  //     const coupleRegis = await this._coupleRegisRepository.findOne({
+  //       relations: ['parishioner1', 'parishioner2', 'course'],
+  //       where: [
+  //         { id: id }, // Your first where condition
+  //         {
+  //           // Your OR condition
+  //           or: [
+  //             {
+  //               /* Add your OR conditions here */
+  //             },
+  //           ],
+  //         },
+  //       ],
+  //     });
+
+  //     return AppResponse.setSuccessResponse<GetCourseResDto>(coupleRegis);
+  //   } catch (error) {
+  //     return AppResponse.setAppErrorResponse<GetCourseResDto>(error.message);
+  //   }
+  // }
 
   async acceptCoupleRegistration(
     coupleRegisId: number,

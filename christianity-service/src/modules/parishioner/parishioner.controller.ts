@@ -7,10 +7,12 @@ import {
   Patch,
   Post,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
+  ApiBearerAuth,
   ApiBody,
   ApiConsumes,
   ApiOkResponse,
@@ -18,7 +20,6 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { MessagePattern } from '@nestjs/microservices';
 import { ParishionerService } from './parishioner.service';
 import {
   CreateProfileReqDto,
@@ -30,6 +31,8 @@ import { GetProfileResDto, GetProfilesResDto } from './dto/res.dto';
 import { Auth } from '@/core/utils/decorator/auth.decorator';
 import { ACCOUNT_ROLE } from '@/core/constants';
 import * as XLSX from 'xlsx';
+import { GetAccount } from '@/core/utils/decorator/account.decorator';
+import { JwtAuthGuard } from '@/core/utils/guards';
 
 @ApiTags('Parishioner')
 @Controller('parishioner')
@@ -60,6 +63,26 @@ export class ParishionerController {
     @Param('id', ParseIntPipe) id: number,
   ): Promise<GetProfileResDto> {
     return await this.parishionerService.getProfile(id);
+  }
+
+  @Get('profile/:id')
+  // @UseGuards(JwtAuthGuard)
+  // @ApiBearerAuth('access_token')
+  @ApiOkResponse({ description: 'The profile was returned successfully' })
+  async getMyProfile(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<GetProfileResDto> {
+    return await this.parishionerService.getProfile(id);
+  }
+
+  @Get('profile-partner/:phonenumber')
+  // @UseGuards(JwtAuthGuard)
+  // @ApiBearerAuth('access_token')
+  @ApiOkResponse({ description: 'The profile was returned successfully' })
+  async getPartner(
+    @Param('phonenumber') phonenumber: string,
+  ): Promise<GetProfileResDto> {
+    return await this.parishionerService.getPartner(phonenumber);
   }
 
   @Post('')

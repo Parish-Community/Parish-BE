@@ -208,7 +208,8 @@ export class AuthService {
       roleId: account['roleId'],
       role: account['role']['name'],
       isActive: account['isActive'],
-      firstLogin: account['firstLogin'],
+      parishionerId: account['parishioner']['id'],
+      isReqMarriageCatechism: account['parishioner']['isReqMarriageCatechism'],
     };
   }
 

@@ -7,5 +7,6 @@ export interface IAuthPayload {
   roleId: number;
   role: string;
   isActive: boolean;
-  firstLogin: boolean;
+  isReqMarriageCatechism: boolean;
+  parishionerId: number;
 }

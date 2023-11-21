@@ -84,16 +84,6 @@ export class CoupleRegisReqDto {
   @ApiProperty()
   partner2_fullname: string;
 
-  @IsNotEmpty()
-  @IsEnum(GENDER, {
-    message: `The type of gender must be belonged to the enum ${Object.values(
-      GENDER,
-    )}`,
-  })
-  @ApiProperty()
-  gender?: GENDER;
-  partner2_gender: GENDER;
-
   @IsOptional()
   @IsString({ message: 'The phone number must be string' })
   @MinLength(10)
@@ -101,11 +91,6 @@ export class CoupleRegisReqDto {
   @IsNotEmpty()
   @ApiProperty()
   partner2_phonenumber: string;
-
-  @IsNotEmpty()
-  @IsString()
-  @ApiProperty()
-  partner2_dateOfBirth: string;
 
   @IsNotEmpty()
   @IsString()
@@ -120,12 +105,7 @@ export class CoupleRegisReqDto {
   @IsNotEmpty()
   @IsString()
   @ApiProperty()
-  partner2_address: string;
-
-  @IsNotEmpty({ message: 'The parish_clusterId is required' })
-  @IsInt()
-  @ApiProperty()
-  parish_clusterId: number;
+  parishCluster: string;
 }
 
 export class AcceptRegisReqDto {

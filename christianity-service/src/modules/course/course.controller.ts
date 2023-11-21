@@ -52,6 +52,14 @@ export class CourseController {
     return await this.courseService.getCoupleRegistration();
   }
 
+  @Get('/couple-detail/:id')
+  // @Auth(ACCOUNT_ROLE.USER)
+  async getCoupleRegistrationDetail(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<GetCourseResDto> {
+    return await this.courseService.getCoupleRegisDetail(id);
+  }
+
   @Post('/couple-registration')
   @Auth(ACCOUNT_ROLE.USER)
   async coupleRegistration(
@@ -59,7 +67,7 @@ export class CourseController {
     @Body() data: CoupleRegisReqDto,
   ): Promise<GetCourseResDto> {
     return await this.courseService.coupleRegistration(
-      account.payload.accountId,
+      account.payload.parishionerId,
       data,
     );
   }
