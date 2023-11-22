@@ -35,14 +35,14 @@ export class CreatePaymentDto {
   @ApiProperty()
   public amount: number;
 
-  @IsNotEmpty()
-  @IsEnum(Currency, {
-    message: `currency must be one of the following values: ${Object.values(
-      Currency,
-    ).join(', ')}`,
-  })
-  @ApiProperty()
-  public currency: Currency;
+  // @IsNotEmpty()
+  // @IsEnum(Currency, {
+  //   message: `currency must be one of the following values: ${Object.values(
+  //     Currency,
+  //   ).join(', ')}`,
+  // })
+  // @ApiProperty()
+  // public currency: Currency;
 
   @IsOptional()
   @IsString()

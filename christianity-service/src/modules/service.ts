@@ -6,3 +6,4 @@ export * from './course/course.service';
 export * from './payments/payments.service';
 export * from './cloudinary/cloudinary.service';
 export * from './house-hold/house-hold.service';
+export * from './baptism/baptism.service';

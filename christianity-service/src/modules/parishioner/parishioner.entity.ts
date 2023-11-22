@@ -1,12 +1,20 @@
 import { ShareBaseEntity } from '../../core/base.entity';
 import { GENDER, POSITION_PARISH } from '../../core/constants';
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
+} from 'typeorm';
 import { Account } from '../account/account.entity';
 import { ParishCluster } from '../parish-cluster/parish-cluster.entity';
 import { Course } from '../course/entities/course.entity';
 import { HouseHold } from '../house-hold/entities/house-hold.entity';
 import { HouseHoldMember } from '../house-hold/entities/house-hold-member.entity';
 import { CoupleRegistration } from '../course/entities/couple-registration.entity';
+import { Baptism } from '../baptism/baptism.entity';
 
 @Entity({
   name: 'parishioner',
@@ -51,6 +59,13 @@ export class Parishioner extends ShareBaseEntity {
     nullable: false,
   })
   name_mother: string;
+
+  @Column({
+    type: 'varchar',
+    length: 500,
+    nullable: true,
+  })
+  god_parent: string;
 
   @Column({
     type: 'varchar',
@@ -147,4 +162,8 @@ export class Parishioner extends ShareBaseEntity {
 
   @OneToMany(() => CoupleRegistration, (cr) => cr.parishioner2)
   coupleRegistration2: CoupleRegistration[];
+
+  @OneToOne(() => Baptism, (b) => b.parishioner)
+  @JoinColumn()
+  baptism: Baptism;
 }

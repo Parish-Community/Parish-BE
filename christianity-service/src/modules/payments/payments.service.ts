@@ -5,7 +5,7 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
-import { PaymentStatus, TYPEORM } from '@/core/constants';
+import { Currency, PaymentStatus, TYPEORM } from '@/core/constants';
 import { AppResponse } from '@/core/app.response';
 import { Payment } from './payments.entity';
 import { StripeProvider } from './providers/stripe.provider';
@@ -41,6 +41,61 @@ export class PaymentsService {
     }
   }
 
+  async getPaymentsOfUser(accountId: number): Promise<any> {
+    try {
+      const payments = await this._paymentService.find({
+        where: { accountId: accountId },
+      });
+
+      const data = [];
+      payments.forEach((payment) => {
+        const formattedAmount = new Intl.NumberFormat('en-US', {
+          style: 'currency',
+          currency: 'USD',
+        }).format(payment.amount / 100);
+        data.push({
+          id: payment.id,
+          amount: formattedAmount,
+          description: payment.description,
+          initiatedAt: payment.initiatedAt,
+          finalisedAt: payment.finalisedAt,
+          paymentStatus: payment.paymentStatus,
+          accountId: payment.accountId,
+        });
+      });
+
+      return AppResponse.setSuccessResponse<any>(data);
+    } catch (error) {
+      return AppResponse.setAppErrorResponse<any>(error.message);
+    }
+  }
+
+  async getTotalDonations(accountId: number): Promise<any> {
+    try {
+      const payments = await this._paymentService.find({
+        where: { accountId: accountId },
+      });
+
+      let total = 0;
+      payments.forEach((payment) => {
+        total += payment.amount;
+      });
+
+      const formattedAmount = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+      }).format(total / 100);
+
+      const res = {
+        total: formattedAmount,
+      };
+
+      return AppResponse.setSuccessResponse<any>(res);
+    } catch (error) {
+      return AppResponse.setAppErrorResponse<any>(error.message);
+    }
+  }
+
   async createPayment(payload: CreatePaymentDto, account: IAuthPayload) {
     let stripeSession: Stripe.Response<Stripe.Checkout.Session>;
     let customerId: any;
@@ -57,41 +112,41 @@ export class PaymentsService {
         };
         const customer = await this.createCustomerStripe(customerData);
         customerId = customer.id;
+      } else {
+        customerId = paymentRecord.customerId;
       }
 
-      customerId = paymentRecord.customerId;
-
-      const cardPaymentMethod = await this.stripeProvider
-        .getInstance()
-        .paymentMethods.create({
-          type: 'card',
-          card: {
-            number: payload.cardNumber,
-            exp_month: payload.exp_month,
-            exp_year: payload.exp_year,
-            cvc: payload.cvc,
-          },
-        });
-      console.log(cardPaymentMethod);
+      // const cardPaymentMethod = await this.stripeProvider
+      //   .getInstance()
+      //   .paymentMethods.create({
+      //     type: 'card',
+      //     card: {
+      //       number: payload.cardNumber,
+      //       exp_month: payload.exp_month,
+      //       exp_year: payload.exp_year,
+      //       cvc: payload.cvc,
+      //     },
+      //   });
+      // console.log(cardPaymentMethod);
 
       const paymentIntent = await this.stripeProvider
         .getInstance()
         .paymentIntents.create({
           amount: payload.amount,
-          currency: payload.currency,
+          currency: 'usd',
           payment_method_types: ['card'],
           customer: customerId,
           description: payload.description,
           receipt_email: account.email,
-          payment_method: cardPaymentMethod.id,
-          // confirm: true,
-          // payment_method: 'pm_card_visa',
+          // payment_method: cardPaymentMethod.id,
+          confirm: true,
+          payment_method: 'pm_card_visa',
         });
 
       const newPayment = {
         stripeSessionId: paymentIntent.id,
         amount: payload.amount,
-        currency: payload.currency,
+        currency: Currency.Usd,
         accountId: account.accountId,
         description: payload.description,
         initiatedAt: this.getCurrentTimestamp(),
@@ -185,13 +240,13 @@ export class PaymentsService {
       cancel_url: `http://localhost:3000/payments/success?id={CHECKOUT_SESSION_ID}`,
       payment_method_types: ['card'],
       mode: 'payment',
-      currency: payload.currency,
+      currency: 'usd',
       customer_email: account.email,
       line_items: [
         {
           price_data: {
             unit_amount: payload.amount,
-            currency: payload.currency,
+            currency: 'usd',
             product_data: {
               name: 'One time checkout',
             },

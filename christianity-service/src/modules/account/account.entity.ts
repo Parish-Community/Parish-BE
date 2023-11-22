@@ -10,6 +10,7 @@ import {
 import { Parishioner } from '@/modules/parishioner/parishioner.entity';
 import { Role } from '@/modules/role/role.entity';
 import { Payment } from '../payments/payments.entity';
+import { Baptism } from '../baptism/baptism.entity';
 
 @Entity({
   name: 'account',
@@ -87,6 +88,9 @@ export class Account extends ShareBaseEntity {
 
   @OneToMany(() => Payment, (payment) => payment.account)
   payments: Payment[];
+
+  @OneToMany(() => Baptism, (b) => b.account)
+  baptism: Baptism[];
 
   @Column({
     type: 'boolean',

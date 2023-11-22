@@ -17,6 +17,19 @@ export class PaymentsController {
   getPaymentsDonations() {
     return this.paymentsService.getPaymentsDonations();
   }
+  @Get('/donations/user')
+  @ApiBearerAuth('access_token')
+  @UseGuards(JwtAuthGuard)
+  getPaymentsOfUser(@GetAccount() account) {
+    return this.paymentsService.getPaymentsOfUser(account.payload.accountId);
+  }
+
+  @Get('/donations/total')
+  @ApiBearerAuth('access_token')
+  @UseGuards(JwtAuthGuard)
+  getTotalDonations(@GetAccount() account) {
+    return this.paymentsService.getTotalDonations(account.payload.accountId);
+  }
 
   @Post('')
   @ApiBearerAuth('access_token')

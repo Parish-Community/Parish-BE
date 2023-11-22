@@ -6,3 +6,4 @@ export * from './course/course.module';
 export * from './payments/payments.module';
 export * from './cloudinary/cloudinary.module';
 export * from './house-hold/house-hold.module';
+export * from './baptism/baptism.module';

@@ -10,6 +10,7 @@ import {
   RoleController,
   CloudinaryController,
   HouseHoldController,
+  BaptismController,
 } from './modules/controller';
 import {
   AccountService,
@@ -20,6 +21,7 @@ import {
   RoleService,
   CloudinaryService,
   HouseHoldService,
+  BaptismService,
 } from './modules/service';
 import {
   AccountModule,
@@ -30,6 +32,7 @@ import {
   RoleModule,
   CloudinaryModule,
   HouseHoldModule,
+  BaptismModule,
 } from './modules';
 
 @Module({
@@ -47,6 +50,7 @@ import {
     PaymentsModule,
     CloudinaryModule,
     HouseHoldModule,
+    BaptismModule,
   ],
   controllers: [
     ParishionerController,
@@ -57,6 +61,7 @@ import {
     PaymentsController,
     CloudinaryController,
     HouseHoldController,
+    BaptismController,
   ],
   providers: [
     ParishionerService,
@@ -67,6 +72,7 @@ import {
     PaymentsService,
     CloudinaryService,
     HouseHoldService,
+    BaptismService,
   ],
 })
 export class AppModule {}
