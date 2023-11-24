@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { DataSource, Repository, SelectQueryBuilder } from 'typeorm';
 import { AppResponse } from '@/core/app.response';
 import { Currency, GENDER, PaymentStatus, TYPEORM } from '@/core/constants';
@@ -12,6 +12,11 @@ import {
 } from './dto/req.dto';
 import { ExtraQueryBuilder } from '@/core/utils/querybuilder.typeorm';
 import { ErrorHandler } from '@/core/common/error';
+import { MailerService } from '@nestjs-modules/mailer';
+import { ConfigService } from '@nestjs/config';
+import { ParishCluster } from '../parish-cluster/parish-cluster.entity';
+import { CronJob } from 'cron';
+import { Cron, CronExpression, SchedulerRegistry } from '@nestjs/schedule';
 
 @Injectable()
 export class BaptismService {
@@ -19,12 +24,22 @@ export class BaptismService {
   private _profileRepository: Repository<Parishioner>;
   private _accountRepository: Repository<Account>;
   private _baptismRepository: Repository<Baptism>;
-  constructor(@Inject(TYPEORM) dataSource: DataSource) {
+  private readonly _parishClusterRepository: Repository<ParishCluster>;
+  private readonly _mailerService: MailerService;
+  constructor(
+    @Inject(TYPEORM) dataSource: DataSource,
+    mailerService: MailerService,
+    private readonly configService: ConfigService,
+    private schedulerRegistry: SchedulerRegistry,
+  ) {
     this._dataSource = dataSource;
     this._profileRepository = dataSource.getRepository(Parishioner);
     this._accountRepository = dataSource.getRepository(Account);
     this._baptismRepository = dataSource.getRepository(Baptism);
+    this._mailerService = mailerService;
+    this._parishClusterRepository = dataSource.getRepository(ParishCluster);
   }
+  private readonly logger = new Logger(BaptismService.name);
 
   async getBaptisms(queries: GetProfilesReqDto): Promise<any> {
     try {
@@ -280,6 +295,21 @@ export class BaptismService {
 
       await this._baptismRepository.update({ id: id }, data);
 
+      const parishClusterName = await this._parishClusterRepository.findOne({
+        where: { parish_clusterId: payload.parish_clusterId },
+      });
+
+      const emailData = {
+        regisName: payload.regisname,
+        christianName: payload.christianName,
+        fullname: payload.fullname,
+        parishClusterName: parishClusterName.name,
+        priestBaptism: payload.priestBaptism,
+        dateBaptism: payload.dateBaptism,
+      };
+
+      await this.sendPassWordToEmail(payload.email, emailData);
+
       return AppResponse.setSuccessResponse<any>(
         null,
         'Accept baptism success',
@@ -321,5 +351,86 @@ export class BaptismService {
     } catch (error) {
       throw error;
     }
+  }
+
+  private async sendPassWordToEmail(
+    sendEmailTo: string,
+    emailData: any,
+  ): Promise<void> {
+    console.log('send email');
+    try {
+      await this._mailerService.sendMail({
+        to: sendEmailTo,
+        from: this.configService.get<string>('MAILER_DEFAULT_FROM'),
+        subject: 'Giáo xứ Tràng Lưu - Xác nhận đơn xin rửa tội',
+        template: 'index',
+        context: {
+          regisName: emailData.regisName,
+          christianName: emailData.christianName,
+          fullname: emailData.fullname,
+          parishClusterName: emailData.parishClusterName,
+          priestBaptism: emailData.priestBaptism,
+          dateBaptism: emailData.dateBaptism,
+        },
+      });
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  addCronJob(name: string, dates: number) {
+    const job: any = new CronJob(`${0} 0 ${8} ${dates} 11 *`, () => {
+      this.logger.warn(`Play time (${dates}) for job ${name} to run!`);
+    });
+
+    this.schedulerRegistry.addCronJob(name, job);
+    job.start();
+
+    this.logger.warn(`job ${name} added for each minute at ${dates} dates!`);
+
+    const jobs = this.schedulerRegistry.getCronJobs();
+    console.log(jobs);
+
+    const res = {
+      status: 200,
+      message: `job ${name} added for each minute at ${dates} seconds!`,
+    };
+
+    return res;
+  }
+
+  getCrons() {
+    const jobsList = [];
+    const jobs = this.schedulerRegistry.getCronJobs();
+    // console.log(jobs);
+    jobs.forEach((value, key, map) => {
+      let next;
+      try {
+        next = value.nextDates()[0].toJSDate().toISOString();
+      } catch (e) {
+        next = 'error: next fire date is in the past!';
+      }
+      this.logger.log(`job: ${key} -> next: ${next}`);
+      jobsList.push({ name: key, time: next });
+    });
+    // const jobs = this.schedulerRegistry.getCronJobs();
+    // jobs.forEach((value, key) => {
+    //   let next;
+    //   try {
+    //     next = new Date(value.nextDates()[0].toJSDate().toISOString());
+    //   } catch (e) {
+    //     next = 'error: next fire date is in the past!';
+    //   }
+    //   this.logger.log(`job: ${key} -> next: ${next}`);
+    //   jobsList.push({ name: key, time: next });
+    // });
+
+    const res = {
+      status: 200,
+      message: 'get all jobs',
+      data: jobsList,
+    };
+
+    return res;
   }
 }

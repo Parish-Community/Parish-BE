@@ -180,6 +180,7 @@ export class ParishionerController {
         gender: item['gender'],
         name_father: item['name_father'],
         name_mother: item['name_mother'],
+        god_parent: item['god_parent'],
         phonenumber: item['phonenumber'],
         address: item['address'],
         parish_clusterId: item['parish_clusterId'],

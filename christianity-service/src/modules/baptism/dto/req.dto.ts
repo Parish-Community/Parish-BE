@@ -80,6 +80,26 @@ export class UpdateBaptismReqDto {
   @IsInt()
   @ApiProperty()
   parish_clusterId: number;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty()
+  regisname: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty()
+  christianName: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty()
+  fullname: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty()
+  email: string;
 }
 
 export class FileImportDataReqDto {
@@ -104,4 +124,12 @@ export class FileImportDataReqDto {
   @IsInt()
   @ApiProperty()
   parish_clusterId: number;
+}
+
+export class CronDto {
+  @ApiProperty({ type: String })
+  name: string;
+
+  @ApiProperty({ type: Number, required: false })
+  seconds?: number;
 }

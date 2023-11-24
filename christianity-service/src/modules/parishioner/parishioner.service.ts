@@ -76,6 +76,7 @@ export class ParishionerService {
           'parishioner.christianName',
           'parishioner.name_father',
           'parishioner.name_mother',
+          'parishioner.god_parent',
           'parishioner.phonenumber',
           'parishioner.dateOfBirth',
           'parishioner.gender',
@@ -246,7 +247,7 @@ export class ParishionerService {
         );
       }
 
-      if (phonenumber) {
+      if (phonenumber !== profile.phonenumber && phonenumber) {
         const existPhoneNumber = await this._profileRepository.findOne({
           where: { phonenumber },
         });

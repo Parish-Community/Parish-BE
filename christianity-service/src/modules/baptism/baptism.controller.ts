@@ -25,6 +25,7 @@ import { BaptismService } from './baptism.service';
 import { GetBaptismResDto } from './dto/res.dto';
 import {
   CreateBaptismReqDto,
+  CronDto,
   FileImportDataReqDto,
   GetProfilesReqDto,
   UpdateBaptismReqDto,
@@ -148,15 +149,29 @@ export class BaptismController {
 
     const data = jsonData.map((item) => {
       return {
-        parish_clusterId: item['parish_clusterId'],
-        dateBaptism: item['dateBaptism'].toISOString().split('T')[0],
-        priestBaptism: item['priestBaptism'],
+        // parish_clusterId: item['parish_clusterId'],
+        // dateBaptism: item['dateBaptism'].toISOString().split('T')[0],
+        // priestBaptism: item['priestBaptism'],
         accountId: account.payload.accountId,
         parishionerId: item['parishionerId'],
-        isAccepted: true,
+        isAccepted: false,
       };
     });
 
     return await this.baptismService.importData(data);
+  }
+
+  @Post('cronJob')
+  @ApiOperation({ summary: 'Create new cron job' })
+  addCronJob(@Body() cronDto: CronDto) {
+    const { name, seconds } = cronDto;
+    return this.baptismService.addCronJob(name, seconds);
+  }
+
+  @Get('cronJobs-test')
+  @Auth(ACCOUNT_ROLE.ADM)
+  @ApiOperation({ summary: 'Get all cron jobs' })
+  getCronJobs() {
+    return this.baptismService.getCrons();
   }
 }
