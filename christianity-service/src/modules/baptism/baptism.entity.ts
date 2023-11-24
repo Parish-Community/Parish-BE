@@ -55,7 +55,6 @@ export class Baptism extends ShareBaseEntity {
     nullable: false,
   })
   accountId: number;
-
   @ManyToOne(() => Account, (account) => account.baptism, {
     onDelete: 'CASCADE',
   })

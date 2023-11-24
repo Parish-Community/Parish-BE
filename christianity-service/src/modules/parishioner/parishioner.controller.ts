@@ -1,11 +1,13 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseIntPipe,
   Patch,
   Post,
+  Query,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -24,6 +26,7 @@ import { ParishionerService } from './parishioner.service';
 import {
   CreateProfileReqDto,
   FileImportDataReqDto,
+  GetProfilesReqDto,
   RegistrationAccountReqDto,
   UpdateProfileReqDto,
 } from './dto/req.dto';
@@ -35,7 +38,7 @@ import { GetAccount } from '@/core/utils/decorator/account.decorator';
 import { JwtAuthGuard } from '@/core/utils/guards';
 
 @ApiTags('Parishioner')
-@Controller('parishioner')
+@Controller('parishioners')
 export class ParishionerController {
   constructor(private readonly parishionerService: ParishionerService) {}
 
@@ -43,8 +46,10 @@ export class ParishionerController {
   // @Auth(ACCOUNT_ROLE.ADM)
   @ApiOperation({ summary: 'Get all profile' })
   @ApiOkResponse({ description: 'The list profile were returned successfully' })
-  async getProfiles(): Promise<GetProfilesResDto> {
-    return await this.parishionerService.getProfiles();
+  async getProfiles(
+    @Query() queries: GetProfilesReqDto,
+  ): Promise<GetProfilesResDto> {
+    return await this.parishionerService.getProfiles(queries);
   }
 
   @Get('monks')
@@ -128,6 +133,17 @@ export class ParishionerController {
     return await this.parishionerService.registrationAccount(body);
   }
 
+  @Delete('/:id')
+  @Auth(ACCOUNT_ROLE.ADM)
+  @ApiOperation({ summary: 'Delete profile' })
+  @ApiResponse({
+    status: 200,
+    description: 'Deleted profile',
+  })
+  async deleteProfile(@Param('id', ParseIntPipe) id: number) {
+    return await this.parishionerService.deleteProfile(id);
+  }
+
   @Post('import-parishioner')
   @ApiConsumes('multipart/form-data')
   @ApiBody({
@@ -141,7 +157,6 @@ export class ParishionerController {
       },
     },
   })
-  // @UseInterceptors(FileInterceptor('file', multerOptions))
   @UseInterceptors(FileInterceptor('file'))
   async UploadExcelFile(@UploadedFile() file: Express.Multer.File) {
     const workBook: XLSX.WorkBook = XLSX.read(file.buffer, {

@@ -11,6 +11,8 @@ import {
   IsNumber,
 } from 'class-validator';
 import { ApiProperty, OmitType, PartialType } from '@nestjs/swagger';
+import { PaginationReqDto } from '@/core/common/pagination.dto';
+import { Transform } from 'class-transformer';
 
 export class CreateProfileReqDto {
   @IsString()
@@ -313,4 +315,30 @@ export class RegistrationAccountReqDto {
   // @IsInt()
   // @ApiProperty()
   // parish_clusterId: number;
+}
+
+export class GetProfilesReqDto extends PaginationReqDto {
+  @IsOptional()
+  @IsString({ message: 'The search text must be a string' })
+  searchText: string;
+
+  @IsOptional()
+  @IsEnum(GENDER, {
+    message: `The type of gender must be belonged to the enum ${Object.values(
+      GENDER,
+    )}`,
+  })
+  @ApiProperty({ enum: [GENDER.FEMALE, GENDER.MALE] })
+  readonly gender?: string;
+
+  // @IsOptional()
+  // @Transform(({ value }) => parseInt(value))
+  // @IsNumber(
+  //   { allowNaN: false, allowInfinity: false },
+  //   { message: 'The department id must be a number' },
+  // )
+  // @ApiProperty({
+  //   example: 1,
+  // })
+  // readonly departmentId?: number;
 }

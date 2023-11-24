@@ -2,7 +2,11 @@ import { Injectable, Inject } from '@nestjs/common';
 import { DataSource, Repository, SelectQueryBuilder } from 'typeorm';
 import { POSITION_PARISH, TYPEORM } from '../../core/constants';
 import { Parishioner } from './parishioner.entity';
-import { CreateProfileReqDto, UpdateProfileReqDto } from './dto/req.dto';
+import {
+  CreateProfileReqDto,
+  GetProfilesReqDto,
+  UpdateProfileReqDto,
+} from './dto/req.dto';
 import {
   GetProfileResDto,
   GetProfilesResDto,
@@ -13,6 +17,7 @@ import { AppResponse } from '@/core/app.response';
 import { Account } from '../account/account.entity';
 import { ErrorHandler } from '@/core/common/error';
 import { Bcrypt } from '@/core/utils/bcrypt';
+import { ExtraQueryBuilder } from '@/core/utils/querybuilder.typeorm';
 
 @Injectable()
 export class ParishionerService {
@@ -50,12 +55,94 @@ export class ParishionerService {
     }
   }
 
-  async getProfiles(): Promise<GetProfilesResDto> {
+  async getProfiles(queries: GetProfilesReqDto): Promise<GetProfilesResDto> {
     try {
-      const profiles = await this._profileRepository.find({
-        relations: ['parish_cluster'],
+      const userTableFields: Array<string> = this._dataSource
+        .getMetadata(Parishioner)
+        .columns.map((column) => {
+          return column.propertyName;
+        });
+      const mappingUserFieldType: Array<string> = this._dataSource
+        .getMetadata(Parishioner)
+        .columns.map((column) => {
+          return `${column.propertyName}:${column.type}`;
+        });
+
+      let query: SelectQueryBuilder<Parishioner> = this._dataSource
+        .createQueryBuilder()
+        .select([
+          'parishioner.id',
+          'parishioner.fullname',
+          'parishioner.christianName',
+          'parishioner.name_father',
+          'parishioner.name_mother',
+          'parishioner.phonenumber',
+          'parishioner.dateOfBirth',
+          'parishioner.gender',
+          'parishioner.avatar',
+          'parishioner.address',
+          'parishioner.diocese',
+          'parishioner.isReqMarriageCatechism',
+          'parishioner.parish',
+          'parishioner.parish_clusterId',
+          'parish_cluster.parish_clusterId',
+          'parish_cluster.name',
+          'parishioner.position',
+          'parishioner.isMarried',
+          'parishioner.createdAt',
+        ])
+        .from(Parishioner, 'parishioner')
+        .innerJoin(
+          'parishioner.parish_cluster',
+          'parish_cluster',
+          'parishioner.parish_clusterId = parish_cluster.parish_clusterId',
+        );
+
+      query = ExtraQueryBuilder.addWhereAnd<Parishioner>(
+        query,
+        mappingUserFieldType,
+        queries,
+        'parishioner',
+      );
+
+      query = ExtraQueryBuilder.addWhereOr<Parishioner>(
+        query,
+        [
+          'parishioner.fullname',
+          'parishioner.gender',
+          'parishioner.dateOfBirth',
+          'parishioner.phonenumber',
+        ],
+        queries,
+      );
+      if (queries.sortBy) {
+        if (!userTableFields.includes(queries.sortBy)) {
+          return AppResponse.setUserErrorResponse<GetProfilesResDto>(
+            ErrorHandler.invalid(queries.sortBy),
+          );
+        }
+        query.orderBy(
+          `parishioner.${queries.sortBy}`,
+          queries.order === 'ASC' ? 'ASC' : 'DESC',
+        );
+      } else {
+        query.orderBy('parishioner.createdAt', 'DESC');
+      }
+
+      const { fullQuery, pages, nextPage, totalDocs, prevPage, currentPage } =
+        await ExtraQueryBuilder.paginateBy<Parishioner>(query, {
+          page: queries.page,
+          pageSize: queries.pageSize,
+        });
+      const profiles: any[] = await fullQuery.getMany();
+      return AppResponse.setSuccessResponse<GetProfilesResDto>(profiles, {
+        page: currentPage,
+        pageSize: queries.pageSize,
+        totalPages: pages,
+        nextPage: nextPage,
+        prevPage: prevPage,
+        totalDocs: totalDocs,
       });
-      return AppResponse.setSuccessResponse<GetProfilesResDto>(profiles);
     } catch (error) {
       return AppResponse.setAppErrorResponse<GetProfilesResDto>(error.message);
     }
