@@ -7,6 +7,7 @@ import { Account } from '../account/account.entity';
 import { Parishioner } from '../parishioner/parishioner.entity';
 import {
   CreateBaptismReqDto,
+  EmailScheduleDto,
   GetProfilesReqDto,
   UpdateBaptismReqDto,
 } from './dto/req.dto';
@@ -308,7 +309,7 @@ export class BaptismService {
         dateBaptism: payload.dateBaptism,
       };
 
-      await this.sendPassWordToEmail(payload.email, emailData);
+      await this.sendAcceptedToEmail(payload.email, emailData);
 
       return AppResponse.setSuccessResponse<any>(
         null,
@@ -353,7 +354,7 @@ export class BaptismService {
     }
   }
 
-  private async sendPassWordToEmail(
+  private async sendAcceptedToEmail(
     sendEmailTo: string,
     emailData: any,
   ): Promise<void> {
@@ -431,6 +432,49 @@ export class BaptismService {
       data: jobsList,
     };
 
+    return res;
+  }
+
+  scheduleEmail(emailSchedule: EmailScheduleDto) {
+    const date = new Date(emailSchedule.date);
+    const scheduleDate = date.setMilliseconds(date.getMilliseconds() - 1);
+    console.log(typeof scheduleDate);
+    // new Date((d = new Date()).setMilliseconds(d.getMilliseconds() - 1))
+    console.log(date);
+    const job: any = new CronJob(`${15} * * * * *`, async () => {
+      await this._mailerService.sendMail({
+        to: 'duytuanndt20@gmail.com',
+        from: this.configService.get<string>('MAILER_DEFAULT_FROM'),
+        subject: 'Giáo xứ Tràng Lưu - Xác nhận đơn xin rửa tội',
+        template: 'mail',
+        // context: {
+        //   regisName: 'ScheduleModule',
+        //   christianName: 'ScheduleModule',
+        //   fullname: 'ScheduleModule',
+        //   parishClusterName: 'ScheduleModule',
+        //   priestBaptism: 'ScheduleModule',
+        //   dateBaptism: 'ScheduleModule',
+        // },
+      });
+    });
+
+    this.schedulerRegistry.addCronJob(`${Date.now()}-${'Reminder-mail'}`, job);
+    job.start();
+    const schedulerRes = {
+      status: 200,
+      message: 'Schedule email successfully',
+    };
+    return schedulerRes;
+  }
+
+  cancelAllScheduledEmails() {
+    this.schedulerRegistry.getCronJobs().forEach((job) => {
+      job.stop();
+    });
+    const res = {
+      status: 200,
+      message: 'Cancel all scheduled emails',
+    };
     return res;
   }
 }

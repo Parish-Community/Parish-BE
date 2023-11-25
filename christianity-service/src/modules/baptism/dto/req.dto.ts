@@ -10,6 +10,7 @@ import {
   IsNumber,
   IsBoolean,
   IsEmpty,
+  IsEmail,
 } from 'class-validator';
 import { ApiProperty, OmitType, PartialType } from '@nestjs/swagger';
 import { PaginationReqDto } from '@/core/common/pagination.dto';
@@ -132,4 +133,16 @@ export class CronDto {
 
   @ApiProperty({ type: Number, required: false })
   seconds?: number;
+}
+
+export class EmailScheduleDto {
+  @IsEmail()
+  @ApiProperty({ required: true })
+  recipient: string;
+
+  @IsDateString()
+  @ApiProperty({
+    example: '2021-01-01',
+  })
+  date: string;
 }

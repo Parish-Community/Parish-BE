@@ -4,16 +4,22 @@ import {
   Logger,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, Repository, SelectQueryBuilder } from 'typeorm';
 import { Currency, PaymentStatus, TYPEORM } from '@/core/constants';
 import { AppResponse } from '@/core/app.response';
 import { Payment } from './payments.entity';
 import { StripeProvider } from './providers/stripe.provider';
 import Stripe from 'stripe';
-import { CreatePaymentDto } from './dto/req.dto';
+import { CreatePaymentDto, GetPaymentsReqDto } from './dto/req.dto';
 import { IAuthPayload } from '../account/account.interface';
 import { Account } from '../account/account.entity';
 import { ICreateCustomerStripe } from './payments.interface';
+import { ExtraQueryBuilder } from '@/core/utils/querybuilder.typeorm';
+import { ErrorHandler } from '@/core/common/error';
+// import { generateCSV } from '@/core/utils/export.csv';
+import { createObjectCsvWriter } from 'csv-writer';
+import * as json2csv from 'json2csv';
+import * as fs from 'fs';
 
 @Injectable()
 export class PaymentsService {
@@ -29,13 +35,116 @@ export class PaymentsService {
     this._accountRepository = dataSource.getRepository(Account);
   }
 
-  async getPaymentsDonations(): Promise<any> {
+  async getPaymentsDonations(queries: GetPaymentsReqDto): Promise<any> {
     try {
-      const payments = await this._paymentService.find({
-        relations: ['account'],
+      const userTableFields: Array<string> = this._dataSource
+        .getMetadata(Payment)
+        .columns.map((column) => {
+          return column.propertyName;
+        });
+      const mappingUserFieldType: Array<string> = this._dataSource
+        .getMetadata(Payment)
+        .columns.map((column) => {
+          return `${column.propertyName}:${column.type}`;
+        });
+
+      let query: SelectQueryBuilder<Payment> = this._dataSource
+        .createQueryBuilder()
+        .select([
+          'payment.id',
+          'payment.amount',
+          'payment.createdAt',
+          'payment.description',
+          'payment.initiatedAt',
+          'payment.finalisedAt',
+          'payment.paymentStatus',
+          'payment.accountId',
+          'account.fullname',
+          'account.christianName',
+          'account.email',
+          'account.phonenumber',
+          'account.parishionerId',
+          'parishioner.avatar',
+          'parishioner.parish_clusterId',
+          'parish_cluster.parish_clusterId',
+          'parish_cluster.name',
+        ])
+        .from(Payment, 'payment')
+        .innerJoin(
+          'payment.account',
+          'account',
+          'payment.accountId = account.id',
+        )
+        .innerJoin(
+          'account.parishioner',
+          'parishioner',
+          'account.parishionerId = parishioner.id',
+        )
+        .innerJoin(
+          'parishioner.parish_cluster',
+          'parish_cluster',
+          'parishioner.parish_clusterId = parish_cluster.parish_clusterId',
+        );
+
+      // if (queries.searchText) {
+      //   query = query.where(
+      //     `account.fullname ILIKE '%${queries.searchText}%' OR account.email ILIKE '%${queries.searchText}%'`,
+      //   );
+      // }
+
+      query = ExtraQueryBuilder.addWhereAnd<Payment>(
+        query,
+        mappingUserFieldType,
+        queries,
+        'payment',
+      );
+
+      query = ExtraQueryBuilder.addWhereOr<Payment>(
+        query,
+        ['payment.initiatedAt', 'account.fullname', 'payment.paymentStatus'],
+        queries,
+      );
+      if (queries.sortBy) {
+        if (!userTableFields.includes(queries.sortBy)) {
+          return AppResponse.setUserErrorResponse<any>(
+            ErrorHandler.invalid(queries.sortBy),
+          );
+        }
+        query.orderBy(
+          `payment.${queries.sortBy}`,
+          queries.order === 'ASC' ? 'ASC' : 'DESC',
+        );
+      } else {
+        query.orderBy('payment.createdAt', 'DESC');
+      }
+
+      const { fullQuery, pages, nextPage, totalDocs, prevPage, currentPage } =
+        await ExtraQueryBuilder.paginateBy<Payment>(query, {
+          page: queries.page,
+          pageSize: queries.pageSize,
+        });
+      const payments: any[] = await fullQuery.getMany();
+
+      const data = [];
+      payments.forEach((payment) => {
+        const formattedAmount = new Intl.NumberFormat('en-US', {
+          style: 'currency',
+          currency: 'USD',
+        }).format(payment.amount / 100);
+        data.push({
+          ...payment,
+          amount: formattedAmount,
+        });
       });
 
-      return AppResponse.setSuccessResponse<any>(payments);
+      return AppResponse.setSuccessResponse<any>(data, {
+        page: currentPage,
+        pageSize: queries.pageSize,
+        totalPages: pages,
+        nextPage: nextPage,
+        prevPage: prevPage,
+        totalDocs: totalDocs,
+      });
     } catch (error) {
       return AppResponse.setAppErrorResponse<any>(error.message);
     }
@@ -149,7 +258,7 @@ export class PaymentsService {
         currency: Currency.Usd,
         accountId: account.accountId,
         description: payload.description,
-        initiatedAt: this.getCurrentTimestamp(),
+        initiatedAt: new Date(),
         paymentStatus: PaymentStatus.Paid,
         finalisedAt: null,
         customerId: customerId,
@@ -165,46 +274,6 @@ export class PaymentsService {
       throw new InternalServerErrorException(error);
     }
   }
-
-  // async createPayment(payload: CreatePaymentDto, account: IAuthPayload) {
-  //   let stripeSession: Stripe.Response<Stripe.Checkout.Session>;
-  //   let customer: any;
-  //   try {
-  //     const paymentRecord = await this._paymentService.findOneBy({
-  //       accountId: account.accountId,
-  //     });
-
-  //     if (!paymentRecord) {
-  //       const customerData: ICreateCustomerStripe = {
-  //         fullname: account.fullname,
-  //         email: account.email,
-  //         description: 'Customer for one time checkout',
-  //       };
-  //       customer = await this.createCustomerStripe(customerData);
-  //     }
-
-  //     stripeSession = await this.createStripeSession(payload, account);
-  //     const newPayment = {
-  //       stripeSessionId: stripeSession.id,
-  //       amount: payload.amount,
-  //       currency: payload.currency,
-  //       accountId: account.accountId,
-  //       description: payload.description,
-  //       initiatedAt: this.getCurrentTimestamp(),
-  //       paymentStatus: PaymentStatus.Pending,
-  //       finalisedAt: null,
-  //     };
-
-  //     await this._paymentService.save(newPayment);
-
-  //     return { status: 200, url: stripeSession.url };
-  //   } catch (error) {
-  //     Logger.error(error);
-  //     await this.expireStripeSession(stripeSession);
-
-  //     throw new InternalServerErrorException(error);
-  //   }
-  // }
 
   private async createCustomerStripe(
     customerData: ICreateCustomerStripe,
@@ -269,7 +338,70 @@ export class PaymentsService {
     }
   }
 
-  private getCurrentTimestamp(): any {
-    return new Date();
+  async generateCSV(
+    data: any[],
+    filename: string,
+    headers: string[],
+  ): Promise<any> {
+    try {
+      const csvWriter = createObjectCsvWriter({
+        path: filename,
+        header: headers.map((header) => ({ id: header, title: header })),
+      });
+
+      const file = await csvWriter.writeRecords(data);
+      console.log(file);
+      return { status: 200, message: 'CSV file created successfully' };
+    } catch (error) {
+      return { status: 500, message: 'Error exporting to CSV' };
+    }
+  }
+
+  async convertJsonToCsv(
+    data: any[],
+    fields: string[],
+    fileName: string,
+  ): Promise<any> {
+    try {
+      const csv = json2csv.parse(data, { fields });
+      this.writeJsonFile(fileName, csv);
+    } catch (err) {
+      return { status: 500, message: 'Error exporting to CSV' };
+    }
+  }
+
+  private writeJsonFile = (jsonfile, item) => {
+    const savePath = `./src/modules/payments/jsons/${jsonfile}`;
+
+    fs.appendFile(savePath, ',\n' + JSON.stringify(item), function (err) {
+      if (err) {
+        console.log(err);
+        throw err;
+      }
+    });
+  };
+
+  async getTotalAmount(): Promise<any> {
+    try {
+      const payments = await this._paymentService.find();
+      let total = 0;
+      payments.forEach((payment) => {
+        total += payment.amount;
+      });
+
+      const formattedAmount = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+      }).format(total / 100);
+
+      const res = {
+        total: formattedAmount,
+        status: 200,
+      };
+
+      return res;
+    } catch (error) {
+      return AppResponse.setAppErrorResponse<any>(error.message);
+    }
   }
 }

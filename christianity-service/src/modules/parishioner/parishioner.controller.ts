@@ -194,4 +194,20 @@ export class ParishionerController {
     // return data;
     return await this.parishionerService.importData(data);
   }
+
+  @Get('statistics/parish-cluster')
+  // @Auth(ACCOUNT_ROLE.ADM)
+  @ApiOperation({ summary: 'Get parish cluster statistics' })
+  @ApiOkResponse({ description: 'The parish cluster statistics' })
+  async getParishClusterStatistics() {
+    return await this.parishionerService.getParishClusterStatistics();
+  }
+
+  @Get('statistics/total')
+  @Auth(ACCOUNT_ROLE.ADM)
+  @ApiOperation({ summary: 'Get total' })
+  @ApiOkResponse({ description: 'total of parishioner' })
+  async getParishStatistics() {
+    return await this.parishionerService.countTotalRecords();
+  }
 }

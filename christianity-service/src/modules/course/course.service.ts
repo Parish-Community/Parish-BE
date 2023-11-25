@@ -391,4 +391,30 @@ export class CourseService {
       return AppResponse.setAppErrorResponse<GetCourseResDto>(error.message);
     }
   }
+
+  async countAllCourses(): Promise<any> {
+    try {
+      const count = await this._courseRepository.count();
+      const res = {
+        data: count,
+        status: 200,
+      };
+      return res;
+    } catch (error) {
+      return AppResponse.setAppErrorResponse<any>(error.message);
+    }
+  }
+
+  async countAllCouple(): Promise<any> {
+    try {
+      const count = await this._coupleRegisRepository.count();
+      const res = {
+        data: count,
+        status: 200,
+      };
+      return res;
+    } catch (error) {
+      return AppResponse.setAppErrorResponse<any>(error.message);
+    }
+  }
 }

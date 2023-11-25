@@ -110,9 +110,10 @@ export class ParishionerService {
         query,
         [
           'parishioner.fullname',
-          'parishioner.gender',
+          'parishioner.christianName',
           'parishioner.dateOfBirth',
           'parishioner.phonenumber',
+          'parish_cluster.name',
         ],
         queries,
       );
@@ -374,5 +375,64 @@ export class ParishionerService {
     } catch (error) {
       throw error;
     }
+  }
+
+  async getParishClusterStatistics(): Promise<any> {
+    const results = await this._dataSource
+      .createQueryBuilder()
+      .select(['parish_cluster.name'])
+      .addSelect(
+        'COUNT(parishioner.gender) FILTER (WHERE parishioner.gender = :male)',
+        'maleCount',
+      )
+      .addSelect(
+        'COUNT(parishioner.gender) FILTER (WHERE parishioner.gender = :female)',
+        'femaleCount',
+      )
+      .from(Parishioner, 'parishioner')
+      .innerJoin(
+        'parishioner.parish_cluster',
+        'parish_cluster',
+        'parishioner.parish_clusterId = parish_cluster.parish_clusterId',
+      )
+      .groupBy('parish_cluster.name')
+      .addGroupBy('parishioner.gender')
+      .setParameters({
+        male: 'male',
+        female: 'female',
+      })
+      .getRawMany();
+
+    const formattedResults = results.flatMap((result) => {
+      console.log(result);
+      return [
+        {
+          parishCluster: result.parish_cluster_name,
+          value: parseInt(result.maleCount),
+          type: 'Male',
+        },
+        {
+          parishCluster: result.parish_cluster_name,
+          value: parseInt(result.femaleCount),
+          type: 'Female',
+        },
+      ];
+    });
+
+    const res = {
+      data: formattedResults,
+      status: 200,
+    };
+
+    return res;
+  }
+
+  async countTotalRecords(): Promise<any> {
+    const totalRecords = await this._profileRepository.count();
+    const res = {
+      data: totalRecords,
+      status: 200,
+    };
+    return res;
   }
 }

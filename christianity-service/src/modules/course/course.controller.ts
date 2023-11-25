@@ -95,4 +95,16 @@ export class CourseController {
       payload.reason,
     );
   }
+
+  @Get('/total')
+  @Auth(ACCOUNT_ROLE.ADM)
+  async getCountCourses(): Promise<number> {
+    return await this.courseService.countAllCourses();
+  }
+
+  @Get('/couple-registration/total')
+  @Auth(ACCOUNT_ROLE.ADM)
+  async getCountCoupleRegistration(): Promise<number> {
+    return await this.courseService.countAllCouple();
+  }
 }

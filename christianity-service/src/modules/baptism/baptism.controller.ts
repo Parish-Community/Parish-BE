@@ -26,6 +26,7 @@ import { GetBaptismResDto } from './dto/res.dto';
 import {
   CreateBaptismReqDto,
   CronDto,
+  EmailScheduleDto,
   FileImportDataReqDto,
   GetProfilesReqDto,
   UpdateBaptismReqDto,
@@ -173,5 +174,17 @@ export class BaptismController {
   @ApiOperation({ summary: 'Get all cron jobs' })
   getCronJobs() {
     return this.baptismService.getCrons();
+  }
+
+  @Post('email-scheduling')
+  @ApiOperation({ summary: 'Create new cron job for email schedule' })
+  scheduleEmail(@Body() cronDto: EmailScheduleDto) {
+    return this.baptismService.scheduleEmail(cronDto);
+  }
+
+  @Delete('email-scheduling')
+  @ApiOperation({ summary: 'cancel email schedule' })
+  deleteEmailSchedule() {
+    return this.baptismService.cancelAllScheduledEmails();
   }
 }

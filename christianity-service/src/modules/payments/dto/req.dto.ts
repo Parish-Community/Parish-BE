@@ -8,6 +8,7 @@ import {
   IsString,
 } from 'class-validator';
 import { ApiProperty, OmitType, PartialType } from '@nestjs/swagger';
+import { PaginationReqDto } from '@/core/common/pagination.dto';
 
 export class CreatePaymentDto {
   @IsNotEmpty()
@@ -48,4 +49,21 @@ export class CreatePaymentDto {
   @IsString()
   @ApiProperty()
   public description: string;
+}
+
+export class GetPaymentsReqDto extends PaginationReqDto {
+  @IsOptional()
+  @IsString({ message: 'The search text must be a string' })
+  searchText: string;
+
+  // @IsOptional()
+  // @Transform(({ value }) => parseInt(value))
+  // @IsNumber(
+  //   { allowNaN: false, allowInfinity: false },
+  //   { message: 'The department id must be a number' },
+  // )
+  // @ApiProperty({
+  //   example: 1,
+  // })
+  // readonly departmentId?: number;
 }
